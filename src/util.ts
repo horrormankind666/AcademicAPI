@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๒๕/๐๑/๒๕๖๖>
+Modify date : <๐๒/๐๒/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -243,42 +243,56 @@ class Authorization {
             return true;
         },
         async doTokenInfo(req: Schema.TypeRequest): Promise<Schema.Result> {
+            let util: Util = new Util();
             let authorization: string | undefined = req.headers.authorization;
             let statusCode: number = 200;
             let payload: any = null;
+            let clientID: string | null = null;
             let message: string = 'ok';
 
             if (authorization !== undefined) {
                 if (authorization.startsWith("Bearer ")) {
-                    let tokenAccess: string = authorization.substring("Bearer ".length).trim();
-                    let publicKey: string | null = await this.doGetPublicKey(req, tokenAccess);
+                    let CUIDs: Array<string> | null = authorization.substring("Bearer ".length).trim().split('|');
 
-                    if (publicKey !== null) {
-                        try {
-                            payload = jwt.verify(tokenAccess, publicKey, { algorithms: ['RS512'] });
+                    if (CUIDs !== null &&
+                        CUIDs.length === 2) {
+                        let tokenAccess: string = CUIDs[0];
+                        let publicKey: string | null = await this.doGetPublicKey(req, tokenAccess);
 
-                            if (payload !== null) {
-                                let jwtPayload: jwt.JwtPayload = payload;
+                        clientID = CUIDs[1];
+                        clientID = atob(clientID.split('').reverse().join(''));
 
-                                if (jwtPayload.SystemKey !== undefined &&
-                                    jwtPayload.SystemKey !== null &&
-                                    jwtPayload.Exp !== undefined) {
-                                    if (this.doIsTokenExpired(payload.Exp) === true) {
+                        if (publicKey !== null) {
+                            try {
+                                payload = jwt.verify(tokenAccess, publicKey, { algorithms: ['RS512'] });
+
+                                if (payload !== null) {
+                                    let jwtPayload: jwt.JwtPayload = payload;
+
+                                    if (jwtPayload.SystemKey !== undefined &&
+                                        jwtPayload.SystemKey !== null &&
+                                        jwtPayload.Exp !== undefined) {
+                                        if (this.doIsTokenExpired(payload.Exp) === true) {
+                                            statusCode = 401;
+                                            payload = null;
+                                            message = 'token expired';
+                                        }
+                                    }
+                                    else {
                                         statusCode = 401;
                                         payload = null;
-                                        message = 'token expired';
+                                        message = 'unauthorized';
                                     }
                                 }
-                                else {
-                                    statusCode = 401;
-                                    payload = null;
-                                    message = 'unauthorized';
-                                }
+                            }
+                            catch (err: any) {
+                                statusCode = 401;
+                                message = err.message;
                             }
                         }
-                        catch (err: any) {
+                        else {
                             statusCode = 401;
-                            message = err.message;
+                            message = 'unauthorized';
                         }
                     }
                     else {
@@ -298,7 +312,10 @@ class Authorization {
             
             return {
                 statusCode: statusCode,
-                data: payload,
+                data: {
+                    payload: payload,
+                    clientID: clientID
+                },
                 message: message
             };
         }

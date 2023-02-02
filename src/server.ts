@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๐๑/๐๒/๒๕๖๖>
+Modify date : <๐๒/๐๒/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -16,6 +16,7 @@ import express, { Response, NextFunction, Router } from 'express';
 
 import { Util } from './util';
 import { Schema } from './models/schema';
+import { RequestModel } from './models/request';
 import tokenRoute from './routes/token';
 import studentRoute from './routes/student';
 import studentGraphql from './graphql/student'
@@ -23,6 +24,7 @@ import studentGraphql from './graphql/student'
 const app = express();
 const router: Router = express.Router();
 const util: Util = new Util();
+const requestModel: RequestModel = new RequestModel();
 
 dotenv.config();
 
@@ -34,16 +36,18 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     req.url = (req.url + '/');
-
+    
     let urls = (req.url.split('/'));
     let url = (urls.length !== 0 ? urls[1] : '');
-    
+
     if (['ClientSecret', 'Token', 'Graphql'].includes(url) === false) {
         let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req);
+        
+        await requestModel.doSet(req, (tokenResult.data.clientID));
 
         if (tokenResult.statusCode === 200 &&
-            tokenResult.data !== null) {
-            req.payload = tokenResult.data;
+            tokenResult.data.payload !== null) {
+            req.payload = tokenResult.data.payload;
 
             if (['Student'].includes(url) === true) {
                 if (req.payload.SystemKey === process.env.STUDENT_SYSTEM_KEY)
@@ -63,8 +67,15 @@ app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
                 message: tokenResult.message
             }));
     }
-    else
+    else {
+        if (url === 'Token') {
+            let clientID: any = ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null);
+
+            await requestModel.doSet(req, clientID);
+        }
+
         next();
+    }
 });
 app.use('/', router);
 app.get('/', (req: Schema.TypeRequest, res: Response) => {

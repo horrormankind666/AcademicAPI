@@ -2,13 +2,14 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๘/๐๑/๒๕๖๖>
-Modify date : <๒๘/๐๑/๒๕๖๖>
+Modify date : <๐๒/๐๒/๒๕๖๖>
 Description : <>
 =============================================
 */
 
 'use strict';
 
+import btoa from 'btoa';
 import express, { Response, NextFunction, Router } from 'express';
 
 import { Util } from '../util';
@@ -48,12 +49,13 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
                     let tokenAccessResult: Schema.Result = await util.authorization.jwtClient.doGetTokenAccess(req, clientData.apiKey);
                     
                     if (tokenAccessResult.status === true &&
-                        tokenAccessResult.data !== null)
+                        tokenAccessResult.data !== null) {
                         tokenResult = {
                             statusCode: 200,
-                            data: tokenAccessResult.data,
+                            data: (tokenAccessResult.data + '|' + btoa(client.ID).split('').reverse().join('')),
                             message: 'ok',
                         };
+                        }
                     else
                         tokenResult = {
                             statusCode: 204,
