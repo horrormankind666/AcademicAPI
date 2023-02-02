@@ -35,47 +35,49 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
-    req.url = (req.url + '/');
+    let urls: Array<string> = (req.url.split('/'));
+    let url: string | null = (urls.length !== 0 ? (urls[1].length !== 0 ? urls[1] : null) : null);
     
-    let urls = (req.url.split('/'));
-    let url = (urls.length !== 0 ? urls[1] : '');
+    if (url !== null) {
+        if (['Student'].includes(url) === true) {
+            let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req);
+            
+            await requestModel.doSet(req, (tokenResult.data.clientID));
 
-    if (['ClientSecret', 'Token', 'Graphql'].includes(url) === false) {
-        let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req);
-        
-        await requestModel.doSet(req, (tokenResult.data.clientID));
+            if (tokenResult.statusCode === 200 &&
+                tokenResult.data.payload !== null) {
+                req.payload = tokenResult.data.payload;
 
-        if (tokenResult.statusCode === 200 &&
-            tokenResult.data.payload !== null) {
-            req.payload = tokenResult.data.payload;
-
-            if (['Student'].includes(url) === true) {
-                if (req.payload.SystemKey === process.env.STUDENT_SYSTEM_KEY)
-                    next();
-                else
-                    res.send(util.doAPIMessage({
-                        statusCode: 401,
-                        data: null,
-                        message: 'unauthorized'
-                    }));
+                if (['Student'].includes(url) === true) {
+                    if (req.payload.SystemKey === process.env.SYSTEM_KEY)
+                        next();
+                    else
+                        res.send(util.doAPIMessage({
+                            statusCode: 401,
+                            data: null,
+                            message: 'unauthorized'
+                        }));
+                }
             }
+            else
+                res.send(util.doAPIMessage({
+                    statusCode: tokenResult.statusCode,
+                    data: null,
+                    message: tokenResult.message
+                }));
         }
-        else
-            res.send(util.doAPIMessage({
-                statusCode: tokenResult.statusCode,
-                data: tokenResult.data,
-                message: tokenResult.message
-            }));
+        else {
+            if (url === 'Token') {
+                let clientID: any = ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null);
+
+                await requestModel.doSet(req, clientID);
+            }
+
+            next();
+        }
     }
-    else {
-        if (url === 'Token') {
-            let clientID: any = ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null);
-
-            await requestModel.doSet(req, clientID);
-        }
-
+    else
         next();
-    }
 });
 app.use('/', router);
 app.get('/', (req: Schema.TypeRequest, res: Response) => {
