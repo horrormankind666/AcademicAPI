@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๑/๐๒/๒๕๖๖>
-Modify date : <๐๑/๐๒/๒๕๖๖>
+Modify date : <๐๖/๐๒/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -13,10 +13,12 @@ import { buildSchema } from 'graphql';
 import express, { Response, NextFunction, Router } from 'express';
 import { graphqlHTTP } from 'express-graphql';
 
+import { Util } from '../util';
 import { Schema } from '../models/schema';
 import { ProfileModel as StudentProfileModel } from '../models/student/profile';
 
 const router: Router = express.Router();
+const util: Util = new Util();
 const student = {
     profileModel: new StudentProfileModel()
 };
@@ -27,8 +29,8 @@ router.get('/(:section)/Get', (req: Schema.TypeRequest, res: Response, next: Nex
     if (['Profile'].includes(section) === true) {
         let schema = buildSchema(`
             type Language {
-                th: String!
-                en: String!
+                th: String
+                en: String
             }
 
             type Name {
@@ -49,11 +51,11 @@ router.get('/(:section)/Get', (req: Schema.TypeRequest, res: Response, next: Nex
 
             type Personal {
                 fullname: FullName
-                email: String!
+                email: String
             }
 
             type Program {
-                code: String!
+                code: String
                 name: Language
             }
 
@@ -61,22 +63,33 @@ router.get('/(:section)/Get', (req: Schema.TypeRequest, res: Response, next: Nex
                 studentCode: String!
                 faculty: Name
                 program: Program
-                yearEntry: String!
+                yearEntry: String
                 entranceType: Name
                 statusType: Name
-                personal: Personal!
+                personal: Personal
             }
         
             type Query {
                 profile(studentCode: String): Profile
             }
         `);
-        let profile = async(args: { studentCode: string | undefined }): Promise<Schema.Student.Profile | undefined> => {
+        let profile = async(args: { studentCode: string | undefined }): Promise<Schema.Student.Profile | string | undefined> => {
             let profileResult: Schema.Result = await student.profileModel.doGet(args.studentCode);
 
-            return JSON.parse(JSON.stringify(profileResult.data, (key: any, value) =>
-                ((value === null || value === undefined)  ? '' : value)
-            ));
+            if (profileResult.conn !== null &&
+                profileResult.statusCode === 200) {
+                if (profileResult.data !== null) {
+                    return JSON.parse(JSON.stringify(profileResult.data, (key: any, value) =>
+                        ((value === null || value === undefined)  ? '' : value)
+                    ));
+                }
+            }
+
+            throw new Error(JSON.stringify({
+                statusCode: profileResult.statusCode,
+                data: null,
+                message: profileResult.message
+            }));
         };
 
         return graphqlHTTP({
@@ -88,11 +101,11 @@ router.get('/(:section)/Get', (req: Schema.TypeRequest, res: Response, next: Nex
         })(req, res);
     }
     else
-        res.json({
+        res.send(util.doAPIMessage({
             statusCode: 400,
             data: null,
             message: 'bad request'
-        });
+        }));
 });
 
 export default router;

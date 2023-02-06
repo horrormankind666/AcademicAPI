@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๘/๐๑/๒๕๖๖>
-Modify date : <๐๒/๐๒/๒๕๖๖>
+Modify date : <๐๓/๐๒/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -25,11 +25,6 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
         ID: ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null),
         secret: ((req.headers.clientsecret !== undefined) && (req.headers.clientsecret.length !== 0) ? req.headers.clientsecret : null)
     };
-    let tokenResult: Schema.Result = {
-        statusCode: 200,
-        data: null,
-        message: null
-    };
 
     if (client.ID !== null &&
         client.secret !== null) {
@@ -50,48 +45,46 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
                     
                     if (tokenAccessResult.status === true &&
                         tokenAccessResult.data !== null) {
-                        tokenResult = {
+                        res.send(util.doAPIMessage({
                             statusCode: 200,
                             data: (tokenAccessResult.data + '|' + btoa(client.ID).split('').reverse().join('')),
-                            message: 'ok',
-                        };
-                        }
+                            message: 'ok'
+                        }));
+                    }
                     else
-                        tokenResult = {
+                        res.send(util.doAPIMessage({
                             statusCode: 204,
                             data: null,
                             message: 'not authorized ( apiKey or ip or expire )'
-                        };
+                        }));
                 }
                 else
-                    tokenResult = {
+                    res.send(util.doAPIMessage({
                         statusCode: 204,
                         data: null,
                         message: 'not authorized ( apiKey or ip or expire )'
-                    };
+                    }));
             }
             else
-                tokenResult = {
+                res.send(util.doAPIMessage({
                     statusCode: clientResult.statusCode,
                     data: clientResult.data,
                     message: (clientResult.message !== undefined ? clientResult.message : null)
-                }
+                }));
         }
         else
-            tokenResult = {
+            res.send(util.doAPIMessage({
                 statusCode: 204,
                 data: null,
                 message: 'get package fail'
-            }
+            }));
     }
     else
-        tokenResult = {
+        res.send(util.doAPIMessage({
             statusCode: 204,
             data: null,
             message: 'get package fail'
-        }
-    
-    res.send(util.doAPIMessage(tokenResult));
+        }));
 });
 
 export default router;

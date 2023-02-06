@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๐๑/๐๒/๒๕๖๖>
+Modify date : <๐๖/๐๒/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -23,11 +23,6 @@ dotenv.config();
 
 router.get('/(:section)/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     let section: string | undefined = req.params.section;
-    let studentResult: Schema.Result = {
-        statusCode: 200,
-        data: null,
-        message: null
-    };
 
     if (['Profile'].includes(section) === true) {
         let query: {} | null = null;
@@ -35,7 +30,7 @@ router.get('/(:section)/Get', async(req: Schema.TypeRequest, res: Response, next
             method: "GET",
             headers: { "Content-Type": "application/json" }
         };
-        
+
         if (JSON.stringify(req.body) !== '{}')
             query = {
                 query: ('query {' + req.body + '}')
@@ -45,26 +40,44 @@ router.get('/(:section)/Get', async(req: Schema.TypeRequest, res: Response, next
             options.body = JSON.stringify(query);
 
         request(('http://' + process.env.HOST + ':' + process.env.PORT + '/Graphql/Student/' + section + '/Get'), options, (error: any, result: any) => {
-            let profileResult: any = JSON.parse(result.body);
+            let profileGraphqlResult: any = JSON.parse(result.body);
+            let profileReqult: Schema.Result = {
+                statusCode: 200,
+                data: null,
+                message: null
+            };
+            
+            if (profileGraphqlResult.data !== undefined &&
+                profileGraphqlResult.data.profile !== null)
+                profileReqult.data = profileGraphqlResult.data.profile;
+            else {
+                try {
+                    let errorResult: Schema.Result = JSON.parse(profileGraphqlResult.errors[0].message);
 
-            studentResult = {
-                statusCode: result.statusCode,
-                data: (profileResult.data !== undefined ? profileResult.data.profile : null),
-                message: (profileResult.data !== undefined ? 'ok' : profileResult.errors)
+                    profileReqult = {
+                        statusCode: errorResult.statusCode,
+                        data: errorResult.data,
+                        message: errorResult.message
+                    };
+                }
+                catch {
+                    profileReqult = {
+                        statusCode: 400,
+                        data: null,
+                        message: profileGraphqlResult.errors
+                    };
+                }
             }
 
-            res.json(util.doAPIMessage(studentResult));
+            res.send(util.doAPIMessage(profileReqult));
         });
     }
-    else {
-        studentResult = {
+    else
+        res.send(util.doAPIMessage({
             statusCode: 400,
             data: null,
             message: 'bad request'
-        }
-
-        res.json(util.doAPIMessage(studentResult));
-    }
+        }));
 });
 
 export default router;
