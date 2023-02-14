@@ -1,1 +1,1 @@
-node 18.13.0
+nvm use $(Get-Content .nvmrc)
