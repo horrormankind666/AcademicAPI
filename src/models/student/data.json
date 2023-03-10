@@ -1,0 +1,482 @@
+[
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6501001",
+            "faculty": {
+                "name": {
+                    "th": "คณะแพทยศาสตร์ศิริราชพยาบาล",
+                    "en": "FACULTY OF MEDICINE SIRIRAJ HOSPITAL"
+                }
+            },
+            "program": {
+                "code": "SIMD/B - 0",
+                "name": {
+                    "th": "แพทยศาสตรบัณฑิต",
+                    "en": "DOCTOR OF MEDICINE"
+                }
+            },
+            "yearEntry": "2565",
+            "entranceType": {
+                "name": {
+                    "th": "การรับแบบPortfolio (TCAS รอบที่ 1)",
+                    "en": "Portfolio Admission"
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "กำลังศึกษาอยู่",
+                    "en": "Student"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นางสาว",
+                            "en": "Miss"
+                        },
+                        "initials": {
+                            "th": "น.ส.",
+                            "en": "Ms."
+                        }
+                    },
+                    "firstName": {
+                        "th": "กนก",
+                        "en": "KANOK"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "ศิริลัภยานนท์",
+                        "en": "SIRILAPYANONTH"
+                    }
+                },
+                "email": "toeikanok@gmail.com"
+            }
+        },
+        "message": "ok"
+    },
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6470812",
+            "faculty": {
+                "name": {
+                    "th": "คณะเวชศาสตร์เขตร้อน",
+                    "en": "FACULTY OF TROPICAL MEDICINE"
+                }
+            },
+            "program": {
+                "code": "TMPN/U - 0",
+                "name": {
+                    "th": "ประกาศนียบัตรผู้ช่วยพยาบาล",
+                    "en": "CERTIFICATE IN PRACTICAL NURSE"
+                }
+            },
+            "yearEntry": "2564",
+            "entranceType": {
+                "name": {
+                    "th": "รับตรงโดยส่วนงาน",
+                    "en": "Direct Admission by the Faculty / College"
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "ศึกษาครบหลักสูตร",
+                    "en": "Graduated / Completed All Courses as Specified in Curriculum"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นางสาว",
+                            "en": "Miss"
+                        },
+                        "initials": {
+                            "th": "น.ส.",
+                            "en": "Ms."
+                        }
+                    },
+                    "firstName": {
+                        "th": "อุษาวดี",
+                        "en": "USAWADEE"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "โกสา",
+                        "en": "KOSA"
+                    }
+                },
+                "email": "noom061616@gmail.com"
+            }
+        },
+        "message": "ok"
+    },
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6470419",
+            "faculty": {
+                "name": {
+                    "th": "วิทยาลัยราชสุดา",
+                    "en": "RATCHASUDA COLLEGE"
+                }
+            },
+            "program": {
+                "code": "RSDS/B RSTI 3",
+                "name": {
+                    "th": "ศิลปศาสตรบัณฑิต สาขาวิชาหูหนวกศึกษา",
+                    "en": "BACHELOR OF ARTS PROGRAM IN DEAF STUDIES"
+                }
+            },
+            "yearEntry": "2564",
+            "entranceType": {
+                "name": {
+                    "th": "รับตรงโดยส่วนงาน",
+                    "en": "Direct Admission by the Faculty / College"
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "พ้นสภาพนักศึกษา",
+                    "en": "Dismissal"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นางสาว",
+                            "en": "Miss"
+                        },
+                        "initials": {
+                            "th": "น.ส.",
+                            "en": "Ms."
+                        }
+                    },
+                    "firstName": {
+                        "th": "อรยา",
+                        "en": "ORAYA"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "เทิดพงศ์ธรรม",
+                        "en": "THOEDPHONGTHAM"
+                    }
+                },
+                "email": "oraya644a@gmail.com"
+            }
+        },
+        "message": "ok"
+    },
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6589519",
+            "faculty": {
+                "name": {
+                    "th": " วิทยาลัยวิทยาศาสตร์การแพทย์เจ้าฟ้าจุฬาภรณ์ ราชวิทยาลัยจุฬาภรณ์",
+                    "en": " HRH PRINCESS CHULABHORN COLLEGE OF MEDICAL SCIENCE"
+                }
+            },
+            "program": {
+                "code": "PCVM/B - 0",
+                "name": {
+                    "th": "สัตวแพทยศาสตรบัณฑิต",
+                    "en": "DOCTOR OF VETERINARY MEDICINE"
+                }
+            },
+            "yearEntry": "2565",
+            "entranceType": {
+                "name": {
+                    "th": "",
+                    "en": ""
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "สละสิทธิ์",
+                    "en": "Disclaimed"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นาย",
+                            "en": "Mister"
+                        },
+                        "initials": {
+                            "th": "นาย",
+                            "en": "Mr."
+                        }
+                    },
+                    "firstName": {
+                        "th": "ปรัชญ์ทักษวร",
+                        "en": "PRUDTUGSAWORN"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "กรุณามัยพันธุ์",
+                        "en": "KARUNAMAIYAPHAN"
+                    }
+                },
+                "email": "kamol36@hotmail.com"
+            }
+        },
+        "message": "ok"
+    },
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6587007",
+            "faculty": {
+                "name": {
+                    "th": "คณะเทคโนโลยีสารสนเทศและการสื่อสาร",
+                    "en": "FACULTY OF INFORMATION AND COMMUNICATION TECHNOLOGY"
+                }
+            },
+            "program": {
+                "code": "ITDS/B - 0",
+                "name": {
+                    "th": "วิทยาศาสตรบัณฑิต สาขาวิทยาการและเทคโนโลยีดิจิทัล",
+                    "en": "Bachelor of Science in Digital Science and Technology"
+                }
+            },
+            "yearEntry": "2565",
+            "entranceType": {
+                "name": {
+                    "th": "การรับแบบPortfolio (TCAS รอบที่ 1)",
+                    "en": "Portfolio Admission"
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "กำลังศึกษาอยู่",
+                    "en": "Student"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นาย",
+                            "en": "Mister"
+                        },
+                        "initials": {
+                            "th": "นาย",
+                            "en": "Mr."
+                        }
+                    },
+                    "firstName": {
+                        "th": "จักรกฤษณ์",
+                        "en": "JAKKRIT"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "ตันซื่อ",
+                        "en": "TANSUE"
+                    }
+                },
+                "email": ""
+            }
+        },
+        "message": "ok"
+    },
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6370796",
+            "faculty": {
+                "name": {
+                    "th": "คณะทันตแพทยศาสตร์",
+                    "en": "FACULTY OF DENTISTRY"
+                }
+            },
+            "program": {
+                "code": "DTDT/U - 0",
+                "name": {
+                    "th": "ประกาศนียบัตรช่างทันตกรรม",
+                    "en": "CERTIFICATE IN DENTAL TECHNICIAN"
+                }
+            },
+            "yearEntry": "2563",
+            "entranceType": {
+                "name": {
+                    "th": "รับตรงโดยส่วนงาน",
+                    "en": "Direct Admission by the Faculty / College"
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "ศึกษาครบหลักสูตร",
+                    "en": "Graduated / Completed All Courses as Specified in Curriculum"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นาย",
+                            "en": "Mister"
+                        },
+                        "initials": {
+                            "th": "นาย",
+                            "en": "Mr."
+                        }
+                    },
+                    "firstName": {
+                        "th": "รวิพล",
+                        "en": "RAVIPON"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "ปรีชา",
+                        "en": "PREECHA"
+                    }
+                },
+                "email": ""
+            }
+        },
+        "message": "ok"
+    },
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6405814",
+            "faculty": {
+                "name": {
+                    "th": "คณะวิทยาศาสตร์",
+                    "en": "FACULTY OF SCIENCE"
+                }
+            },
+            "program": {
+                "code": "SCIM/B - 1",
+                "name": {
+                    "th": "วิทยาศาสตรบัณฑิต สาขาวิชาคณิตศาสตร์อุตสาหการและวิทยาการข้อมูล (หลักสูตรนานาชาติ)",
+                    "en": "BACHELOR OF SCIENCE PROGRAM IN INDUSTRIAL MATHEMATICS AND DATA SCIENCE (INTERNATIONAL PRO)"
+                }
+            },
+            "yearEntry": "2564",
+            "entranceType": {
+                "name": {
+                    "th": "รับตรงโดยส่วนงาน",
+                    "en": "Direct Admission by the Faculty / College"
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "พ้นสภาพนักศึกษา",
+                    "en": "Dismissal"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นาย",
+                            "en": "Mister"
+                        },
+                        "initials": {
+                            "th": "นาย",
+                            "en": "Mr."
+                        }
+                    },
+                    "firstName": {
+                        "th": "จุฑาภัทร",
+                        "en": "JUTAPAT"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "ดวงแก้ว",
+                        "en": "DUANGKAEW"
+                    }
+                },
+                "email": "k.fay@hotmail.com"
+            }
+        },
+        "message": "ok"
+    },
+    {
+        "statusCode": 200,
+        "data": {
+            "studentCode": "6503010",
+            "faculty": {
+                "name": {
+                    "th": "คณะเภสัชศาสตร์",
+                    "en": "FACULTY OF PHARMACY"
+                }
+            },
+            "program": {
+                "code": "PYPY/B - 2",
+                "name": {
+                    "th": "เภสัชศาสตรบัณฑิต",
+                    "en": "Doctor of Pharmacy Program"
+                }
+            },
+            "yearEntry": "2565",
+            "entranceType": {
+                "name": {
+                    "th": "การรับแบบPortfolio (TCAS รอบที่ 1)",
+                    "en": "Portfolio Admission"
+                }
+            },
+            "statusType": {
+                "name": {
+                    "th": "สละสิทธิ์",
+                    "en": "Disclaimed"
+                }
+            },
+            "personal": {
+                "fullname": {
+                    "title": {
+                        "fullname": {
+                            "th": "นางสาว",
+                            "en": "Miss"
+                        },
+                        "initials": {
+                            "th": "น.ส.",
+                            "en": "Ms."
+                        }
+                    },
+                    "firstName": {
+                        "th": "เมติยา",
+                        "en": "METIYA"
+                    },
+                    "middleName": {
+                        "th": "",
+                        "en": ""
+                    },
+                    "lastName": {
+                        "th": "เชื้อจั่น",
+                        "en": "CHUAJAN"
+                    }
+                },
+                "email": "bowmetiya@gmail.com"
+            }
+        },
+        "message": "ok"
+    }
+]

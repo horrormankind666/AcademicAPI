@@ -89,7 +89,7 @@ class DB {
             user: process.env.MSSQL_USER,
             password: process.env.MSSQL_PASSWORD,
             database: process.env.MSSQL_DATABASE,
-            server: 'stddb.mahidol',
+            server: 'smartdev-write.mahidol',
             pool: {
                 idleTimeoutMillis: 1000
             },
@@ -104,7 +104,7 @@ class DB {
             try {
                 conn = await mssql.connect(this.config);
             }
-            catch (error) {
+            catch (error) {                
                 conn = null;
             }
     
@@ -160,7 +160,7 @@ class DB {
                     conn: conn,
                     statusCode: 503,
                     datas: [],
-                    message: 'database connection fail'
+                    message: JSON.stringify(error)
                 };
             }
         },
