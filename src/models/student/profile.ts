@@ -15,11 +15,6 @@ import { Util } from '../../util';
 import { Schema } from '../schema';
 
 const util: Util = new Util();
-const users = [
-    { id: 1, name: "John Doe", email: "johndoe@gmail.com" },
-    { id: 2, name: "Jane Doe", email: "janedoe@gmail.com" },
-    { id: 3, name: "Mike Doe", email: "mikedoe@gmail.com" },
-];
 
 export class ProfileModel {
     async doGet(studentCode: string | undefined): Promise<Schema.Result> {
@@ -70,6 +65,7 @@ export class ProfileModel {
                                 }
                             },
                             program: {
+                                ID: profileData.programId,
                                 code: profileData.programCodeNew,
                                 name: {
                                     th: profileData.programNameTH,

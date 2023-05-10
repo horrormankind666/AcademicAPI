@@ -34,7 +34,6 @@
         "@types/jsonwebtoken": "^9.0.1",
         "@types/mssql": "^8.1.2",
         "@types/pg": "^8.6.6",
-        "@types/request": "^2.48.8",
-        "sonarqube-scanner": "^3.0.1"
+        "@types/request": "^2.48.8"
     }
 }

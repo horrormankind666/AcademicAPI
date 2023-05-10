@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๐๒/๐๒/๒๕๖๖>
+Modify date : <๑๐/๐๕/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -89,7 +89,7 @@ class DB {
             user: process.env.MSSQL_USER,
             password: process.env.MSSQL_PASSWORD,
             database: process.env.MSSQL_DATABASE,
-            server: 'smartdev-write.mahidol',
+            server: (process.env.MSSQL_SERVER + ''),
             pool: {
                 idleTimeoutMillis: 1000
             },
@@ -98,13 +98,15 @@ class DB {
                 trustServerCertificate: true
             } 
         },
-        async doConnect(): Promise<mssql.ConnectionPool | null> {
+        async doConnect(database?: string | undefined): Promise<mssql.ConnectionPool | null> {
             let conn: mssql.ConnectionPool | null = null;
             
             try {
+                this.config.database = (database !== undefined ? database : this.config.database);
+
                 conn = await mssql.connect(this.config);
             }
-            catch (error) {                
+            catch (error) {
                 conn = null;
             }
     
@@ -233,7 +235,7 @@ class Authorization {
             if (tokenExpiration !== undefined &&
                 tokenExpiration !== null) {
                 let timestamp: any = ticksToDate(tokenExpiration)
-                
+
                 if (timestamp.getTime() < Date.now())
                     return true;
 
@@ -242,62 +244,103 @@ class Authorization {
 
             return true;
         },
-        async doTokenInfo(req: Schema.TypeRequest): Promise<Schema.Result> {
-            let util: Util = new Util();
-            let authorization: string | undefined = req.headers.authorization;
+        async doTokenVerify(req: Schema.TypeRequest): Promise<Schema.Result> {
+            let token: any = ((req.headers.token !== undefined) && (req.headers.token.length !== 0) ? req.headers.token : null);
+            let CUIDs: Array<string> | null = null;
+            let status: boolean = true;
             let statusCode: number = 200;
             let payload: any = null;
+            let message: string = 'ok';
+
+            if (token !== null) {
+                CUIDs = token.trim().split('|');
+
+                if (CUIDs !== null &&
+                    CUIDs.length === 2) {
+                    let tokenAccess: string = CUIDs[0];
+                    let publicKey: string | null = await this.doGetPublicKey(req, tokenAccess);
+
+                    if (publicKey !== null) {
+                        try {
+                            payload = jwt.verify(tokenAccess, publicKey, { algorithms: ['RS512'] });
+
+                            if (payload !== null) {
+                                let jwtPayload: jwt.JwtPayload = payload;
+
+                                if (jwtPayload.SystemKey !== undefined &&
+                                    jwtPayload.SystemKey !== null &&
+                                    jwtPayload.Exp !== undefined) {
+                                    if (this.doIsTokenExpired(payload.Exp) === true) {
+                                        status = false;
+                                        statusCode = 401;
+                                        payload = null;
+                                        message = 'token expired';
+                                    }
+                                }
+                                else {
+                                    status = false
+                                    statusCode = 401;
+                                    payload = null;
+                                    message = 'unauthorized';
+                                }
+                            }
+                        }
+                        catch (err: any) {
+                            status = false;
+                            statusCode = 401;
+                            message = err.message;
+                        }
+                    }
+                    else {
+                        status = false;
+                        statusCode = 401;
+                        message = 'unauthorized';
+                    }
+                }
+                else {
+                    status = false;
+                    statusCode = 401;
+                    message = 'unauthorized';
+                }
+            }
+            else {
+                status = false;
+                statusCode = 401;
+                message = 'unauthorized';
+            }
+            
+            return {
+                status: status,
+                statusCode: statusCode,
+                message: message
+            };
+        },
+        async doTokenInfo(req: Schema.TypeRequest): Promise<Schema.Result> {
+            let authorization: string | undefined = req.headers.authorization;
             let clientID: string | null = null;
+            let statusCode: number = 200;
+            let payload: any = null;
             let message: string = 'ok';
 
             if (authorization !== undefined) {
                 if (authorization.startsWith("Bearer ")) {
-                    let CUIDs: Array<string> | null = authorization.substring("Bearer ".length).trim().split('|');
+                    let token: string = authorization.substring("Bearer ".length).trim()
+                    let tokenVerifiedResult: Schema.Result;
 
-                    if (CUIDs !== null &&
-                        CUIDs.length === 2) {
-                        let tokenAccess: string = CUIDs[0];
-                        let publicKey: string | null = await this.doGetPublicKey(req, tokenAccess);
+                    req.headers.token = token;
+                    tokenVerifiedResult = await this.doTokenVerify(req);
 
+                    if (tokenVerifiedResult.status === true &&
+                        tokenVerifiedResult.statusCode === 200) {
+                        let CUIDs: Array<string> | null = authorization.substring("Bearer ".length).trim().split('|');
+                        
+                        payload = jwt.decode(CUIDs[0]); 
                         clientID = CUIDs[1];
                         clientID = atob(clientID.split('').reverse().join(''));
-
-                        if (publicKey !== null) {
-                            try {
-                                payload = jwt.verify(tokenAccess, publicKey, { algorithms: ['RS512'] });
-
-                                if (payload !== null) {
-                                    let jwtPayload: jwt.JwtPayload = payload;
-
-                                    if (jwtPayload.SystemKey !== undefined &&
-                                        jwtPayload.SystemKey !== null &&
-                                        jwtPayload.Exp !== undefined) {
-                                        if (this.doIsTokenExpired(payload.Exp) === true) {
-                                            statusCode = 401;
-                                            payload = null;
-                                            message = 'token expired';
-                                        }
-                                    }
-                                    else {
-                                        statusCode = 401;
-                                        payload = null;
-                                        message = 'unauthorized';
-                                    }
-                                }
-                            }
-                            catch (err: any) {
-                                statusCode = 401;
-                                message = err.message;
-                            }
-                        }
-                        else {
-                            statusCode = 401;
-                            message = 'unauthorized';
-                        }
                     }
                     else {
-                        statusCode = 401;
-                        message = 'unauthorized';
+                        statusCode = tokenVerifiedResult.statusCode;
+                        message = (tokenVerifiedResult.message + '');
                     }
                 }
                 else {
@@ -328,6 +371,7 @@ export class Util {
 
     doAPIMessage(result: Schema.Result): Schema.Result {
         return {
+            status: result.status,
             statusCode: result.statusCode,
             data: result.data,
             message: (result.message !== null ? result.message : (result.statusCode === 200 ? 'ok' : null))
@@ -374,5 +418,74 @@ export class Util {
         catch {
             return null;
         }
+    }
+
+    doRequestGraphql(
+        req: Schema.TypeRequest,
+        url: string | null,
+        route: string | null,
+        rootValue: string
+    ): Promise<Schema.Result> {
+        let query: {} | null = null;
+        let options: request.CoreOptions = {
+            method: "GET",
+            headers: { "Content-Type": "application/json" }
+        };
+
+        if (JSON.stringify(req.body) !== '{}')
+            query = {
+                query: ('query {' + req.body + '}')
+            };
+
+        if (query !== null)
+            options.body = JSON.stringify(query);
+
+        if (url === null &&
+            route !== null)
+            url = ('http://' + process.env.HOST + ':' + process.env.PORT + '/' + route);
+
+        return new Promise((resolve, reject) => {
+            request((url !== null ? url : ''), options, (error: any, result: any) => {
+                if (error === null &&
+                    result.statusCode === 200) {
+                    let graphqlResult: any = JSON.parse(result.body);
+                    let requestResult: Schema.Result = {
+                        statusCode: 200,
+                        data: null,
+                        message: null
+                    };
+
+                    if (graphqlResult.data !== undefined &&
+                        graphqlResult.data[rootValue] !== null)
+                        requestResult.data = graphqlResult.data[rootValue];
+                    else {
+                        try {
+                            let errorResult: Schema.Result = JSON.parse(graphqlResult.errors[0].message);
+
+                            requestResult = {
+                                statusCode: errorResult.statusCode,
+                                data: errorResult.data,
+                                message: errorResult.message
+                            };
+                        }
+                        catch {
+                            requestResult = {
+                                statusCode: 400,
+                                data: null,
+                                message: graphqlResult.errors
+                            };
+                        }
+                    }
+
+                    resolve(requestResult);
+                }
+                else
+                    reject({
+                        statusCode: result.statusCode,
+                        data: null,
+                        message: result.statusMessage
+                    });
+            });
+        });
     }
 }

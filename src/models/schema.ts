@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๐๓/๐๒/๒๕๖๖>
+Modify date : <๐๘/๐๕/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -154,6 +154,7 @@ export namespace Schema {
                 }
             },
             program?: {
+                ID?: string | null,
                 code?: string | null,
                 name?: {
                     th?: string | null,
@@ -298,6 +299,192 @@ export namespace Schema {
                     personal?: FamilyPersonal,
                     work?: FamilyWork
                 }
+            }
+        }
+
+        export namespace DigitalTranscript {
+            export interface Footer {
+                studentCode?: string | null,
+                studentStatus?: string | null,
+                line?: {
+                    one?: string | null,
+                    two?: string | null,
+                    three?: string | null
+                },
+                hons?: string | null,
+                thesisTitle?: string | null
+            }
+
+            export interface GPAInfo {
+                studentID?: string | null,
+                semester?: string | null,
+                currentYear?: string | null,
+                programCode?: string | null,
+                majorCode?: string | null,
+                groupNum?: string | null,
+                subjectCount?: string | null,
+                scredit?: {
+                    regis?: string | null,
+                    earn?: string | null,
+                    compute?: string | null
+                },
+                sproduct?: string | null,
+                sgpa?: string | null,
+                ccredit?: {
+                    regis?: string | null,
+                    earn?: string | null,
+                    compute?: string | null
+                },
+                cproduct?: string | null,
+                cgpa?: string | null,
+                studentStatus?: string | null,
+                flag?: string | null,
+                gradeFlag?: string | null,
+                leaveSts?: string | null,
+                probationCode?: string | null
+            }
+
+            export interface GPAStatus {
+                year?: string | null,
+                semester?: {
+                    name?: string | null,
+                    gpa?: string | null,
+                    credit?: {
+                        earned?: string | null,
+                        value?: string | null,
+                        calculated?: string | null
+                    },
+                    pointEarned?: string | null,
+                    gpax?: string | null
+                },
+                remark?: string | null,
+                line?: {
+                    one?: string | null
+                }
+            }
+
+            export interface SubjectRegistration {
+                course?: {
+                    number?: string | null,
+                    title?: {
+                        default?: string | null,
+                        th?: string | null,
+                        en?: string | null
+                    },
+                    credit?: {
+                        earned?: string | null,
+                        value?: string | null
+                    },
+                    academic?: {
+                        grade?: {
+                            number?: string | null,
+                            text?: string | null
+                        }
+                    },
+                    pointEarned?: string | null,
+                    transferCode?: string | null,
+                },
+                typeCode?: string | null,
+                educationTypeSystem?: string | null,
+                semester?: {
+                    name?: string | null
+                }
+                year?: string | null,
+                organization?: {
+                    name?: string | null
+                },
+                program?: {
+                    name?: string | null
+                }
+            }
+
+            export interface Registrar {
+                ID?: string | null,
+                fullname?: string | null,
+                name?: string | null,
+                rposition?: string | null,
+                title?: string | null,
+                dlevel?: string | null,
+                active?: string | null
+            }
+
+            export interface SemesterStudent {
+                number?: string | null,
+                name?: {
+                    th?: string | null
+                }
+            }
+
+            export interface ProfileStudent {
+                dataSubjectID?: {
+                    studentID?: string | null,
+                    nidn?: string | null,
+                    ccpt?: string | null,
+                },
+                namePrefix?: string | null,
+                givenName?: {
+                    default?: string | null,
+                    th?: string | null,
+                    en?: string | null
+                },
+                middleName?: {
+                    th?: string | null,
+                    en?: string | null
+                },
+                familyName?: {
+                    th?: string | null,
+                    en?: string | null
+                },
+                gender?: string | null,
+                birthDate?: string | null,
+                nationality?: string | null,
+                countryCode?: string | null,
+                personImage?: string | null,
+                faculty?: {
+                    name?: string | null
+                },
+                program?: {
+                    ID?: string | null,
+                    name?: string | null
+                },
+                major?: string | null,
+                minor?: string | null,
+                degree?: {
+                    ID?: string | null,
+                    name?: string | null
+                },
+                dateOfAdmission?: string | null,
+                dateOfGraduation?: string | null,
+                creditsTranferred?: string | null,
+                organization?: {
+                    ID?: string | null,
+                    name?: string | null
+                },
+                building?: {
+                    number?: string | null,
+                    name?: string | null
+                },
+                street?: {
+                    name?: string | null,
+                    additional?: string | null
+                }
+                city?: {
+                    ID?: string | null,
+                    name?: string | null,
+                    subDivision?: {
+                        ID?: string | null,
+                        name?: string | null
+                    }
+                },
+                country?: {
+                    code?: string | null,
+                    subDivision?: {
+                        code?: string | null,
+                        name?: string | null
+                    }
+                }
+                postcode?: string | null
+
             }
         }
     }

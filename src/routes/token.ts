@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๘/๐๑/๒๕๖๖>
-Modify date : <๐๓/๐๒/๒๕๖๖>
+Modify date : <๑๐/๐๕/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -36,7 +36,7 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
         
         if (client.ID === clientID) {
             let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
-            
+
             if (clientResult.conn !== null &&
                 clientResult.statusCode === 200) {
                 if (clientResult.data !== null) {
@@ -85,6 +85,12 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
             data: null,
             message: 'get package fail'
         }));
+});
+
+router.post('/Verify', async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
+    let tokenVerifiedResult: Schema.Result = await util.authorization.jwtClient.doTokenVerify(req);
+
+    res.send(util.doAPIMessage(tokenVerifiedResult));
 });
 
 export default router;
