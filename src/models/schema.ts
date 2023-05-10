@@ -177,6 +177,7 @@ export namespace Schema {
             },
             admissionDate?: string | null,
             graduateDate?: string | null,
+            yearGraduate?: string | null,
             statusGroup?: string | null,
             updateReason?: string | null,
             barcode?: string | null,

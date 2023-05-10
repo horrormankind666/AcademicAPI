@@ -60,6 +60,7 @@ router.get('/Get', (req: Schema.TypeRequest, res: Response, next: NextFunction) 
             faculty: Name
             program: Program
             yearEntry: String
+            yearGraduate: String
             entranceType: Name
             statusType: Name
             personal: Personal

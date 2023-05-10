@@ -88,6 +88,7 @@ export class ProfileModel {
                             },
                             admissionDate: profileData.admissionDate,
                             graduateDate: profileData.graduateDate,
+                            yearGraduate: profileData.yearGraduate,
                             statusGroup: profileData.statusGroup,
                             updateReason: profileData.updateReason,
                             barcode: profileData.barcode,
