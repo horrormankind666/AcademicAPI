@@ -77,7 +77,7 @@ router.get('/Get', (req: Schema.TypeRequest, res: Response, next: NextFunction) 
             profileResult.statusCode === 200) {
             if (profileResult.data !== null) {
                 return JSON.parse(JSON.stringify(profileResult.data, (key: any, value) =>
-                    ((value === null || value === undefined)  ? '' : value)
+                    ((value === null || value === undefined)  ? null : value)
                 ));
             }
         }

@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๐๘/๐๕/๒๕๖๖>
+Modify date : <๑๕/๐๕/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -35,6 +35,7 @@ export namespace Schema {
     export namespace Student {
         interface FullName {
             title?: {
+                code?: string | null,
                 fullname?: {
                     th?: string | null,
                     en?: string | null
@@ -306,12 +307,102 @@ export namespace Schema {
         export namespace DigitalTranscript {
             export interface Footer {
                 studentCode?: string | null,
-                studentStatus?: string | null,
-                line?: {
-                    one?: string | null,
-                    two?: string | null,
-                    three?: string | null
+                fullname?: FullName,
+                IDCard?: string | null,
+                gender?: {
+                    fullname?: {
+                        th?: string | null,
+                        en?: string | null
+                    },
+                    initials?: string | null
                 },
+                birthDate?: {
+                    th?: string | null,
+                    en?: string | null
+                },
+                nationality?: {
+                    code?: string | null,
+                    name?: {
+                        th?: string | null,
+                        en?: string | null
+                    }
+                },
+                email?: string | null,
+                degree?: {
+                    level?: string | null,
+                    name?: {
+                        th?: string | null,
+                        en?: string | null
+                    }
+                },
+                faculty?: {
+                    code?: string | null,
+                    name?: {
+                        th?: string | null,
+                        en?: {
+                            default?: string | null,
+                            other?: string | null
+                        }
+                    }
+                },
+                program?: {
+                    code?: string | null,
+                    name?: {
+                        th?: string | null,
+                        en?: string | null
+                    },
+                    year?: string | null,
+                    type?: string | null
+                },
+                major?: {
+                    code?: string | null,
+                    name?: {
+                        th?: string | null,
+                        en?: string | null
+                    }
+                },
+                groupNum?: string | null,
+                interProgram?: {
+                    name?: {
+                        th?: string | null,
+                        en?: string | null
+                    }
+                },
+                studentStatus?: string | null,
+                admissionDate?: {
+                    th?: string | null,
+                    en?: string | null
+                },
+                graduateDate?: {
+                    th?: string | null,
+                    en?: string | null
+                },
+                currentYear?: string | null,
+                lastYear?: string | null,
+                distinction?: string | null,
+                gradYear?: string | null,
+                quotaCode?: string | null,
+                BM?: {
+                    name?: {
+                        th?: {
+                            1?: string | null,
+                            2?: string | null
+                        }
+                    }
+                },
+                passedEnglishExam?: string | null,
+                txtStudentPassed?: {
+                    th?: string | null,
+                    en?: string | null
+                },
+                praticeHrs?: {
+                    th?: string | null,
+                    en?: string | null
+                }
+            }
+
+            export interface AdditionalInformation {
+                studentCode?: string | null,
                 hons?: string | null,
                 thesisTitle?: string | null
             }
@@ -349,13 +440,13 @@ export namespace Schema {
                 year?: string | null,
                 semester?: {
                     name?: string | null,
-                    gpa?: string | null,
                     credit?: {
                         earned?: string | null,
                         value?: string | null,
                         calculated?: string | null
                     },
                     pointEarned?: string | null,
+                    gpa?: string | null,
                     gpax?: string | null
                 },
                 remark?: string | null,
@@ -410,9 +501,11 @@ export namespace Schema {
             }
 
             export interface SemesterStudent {
-                number?: string | null,
-                name?: {
-                    th?: string | null
+                semester?: {
+                    code?: string | null,
+                    name?: {
+                        th?: string | null
+                    }
                 }
             }
 
@@ -422,7 +515,10 @@ export namespace Schema {
                     nidn?: string | null,
                     ccpt?: string | null,
                 },
-                namePrefix?: string | null,
+                namePrefix?: {
+                    th?: string | null,
+                    en?: string | null
+                },
                 givenName?: {
                     default?: string | null,
                     th?: string | null,
@@ -450,10 +546,7 @@ export namespace Schema {
                 },
                 major?: string | null,
                 minor?: string | null,
-                degree?: {
-                    ID?: string | null,
-                    name?: string | null
-                },
+                degree?: string | null,
                 dateOfAdmission?: string | null,
                 dateOfGraduation?: string | null,
                 creditsTranferred?: string | null,
@@ -484,8 +577,8 @@ export namespace Schema {
                         name?: string | null
                     }
                 }
-                postcode?: string | null
-
+                postcode?: string | null,
+                schoolLevel?: string | null
             }
         }
     }

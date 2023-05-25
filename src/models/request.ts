@@ -53,8 +53,9 @@ export class RequestModel {
             '       \'' + req.headers['user-agent'] + '\', ' +
             '       getdate(), ' +
             '       ' + (clientID !== null ? ('\'' + clientID + '\'') : null) + ', ' +
-            '       dbo.fnc_sysGetIP()'
+            '       \'' + util.doGetIPAddress(req) + '\''
         );
+        
         await util.db.mssql.doExecuteQuery(conn, null, 'query', query);
 
         util.db.mssql.doClose(conn);

@@ -13,6 +13,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Response, NextFunction, Router } from 'express';
+import request from 'request';
 
 import { Util } from './util';
 import { Schema } from './models/schema';
@@ -187,8 +188,9 @@ app.get('/', (req: Schema.TypeRequest, res: Response) => {
         message: 'bad request'
     }));
 });
+app.enable('trust proxy');
 app.get('/Test', (req: Schema.TypeRequest, res: Response) => {
-    res.send('Test');
+    res.send(util.doGetIPAddress(req));
 });
 /*
 สำหรับสร้าง client secret โดยใช้ clientID, systemKey

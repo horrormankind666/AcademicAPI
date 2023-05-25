@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๑๐/๐๕/๒๕๖๖>
+Modify date : <๒๕/๐๕/๒๕๖๖>
 Description : <>
 =============================================
 */
@@ -102,7 +102,8 @@ class DB {
             let conn: mssql.ConnectionPool | null = null;
             
             try {
-                this.config.database = (database !== undefined ? database : this.config.database);
+                process.env.MSSQL_DATABASE = (database !== undefined ? database : process.env.DATABASE_INFINITY);
+                this.config.database = process.env.MSSQL_DATABASE;
 
                 conn = await mssql.connect(this.config);
             }
@@ -487,5 +488,41 @@ export class Util {
                     });
             });
         });
+    }
+
+    doIsStringEmpty(val: string | undefined | null): boolean {
+        if (val !== undefined &&
+            val !== null)
+            return (val.length === 0)
+           
+        return true;
+    }
+
+    doGetString(val: string | undefined | null): string | null {
+        return (this.doIsStringEmpty(val) === false ? String(val) : null)
+    }
+
+    doGetStringNumber(
+        val: any,
+        fixed: number
+    ): string | null {
+        return (this.doIsStringEmpty(val) === false ? String(val.toFixed(fixed)) : null);
+    }
+
+    doGetStringDate(
+        val: any,
+        locale: string
+    ): string | null {
+        return (this.doIsStringEmpty(val) === false ? String(val.toLocaleDateString(locale)) : null);
+    }
+
+    doGetIPAddress(req: Schema.TypeRequest): string {
+        let ip: string | undefined = (req.headers['x-forwarded-for'] as string || '').split(',')[0] || req.socket.remoteAddress?.toString().split(':').pop();
+
+        if (ip === '1' ||
+            ip == undefined)
+            ip = '127.0.0.1';
+        
+        return ip;
     }
 }
