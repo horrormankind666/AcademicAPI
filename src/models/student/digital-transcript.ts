@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๙/๐๕/๒๕๖๖>
-Modify date : <๑๕/๐๕/๒๕๖๖>
+Modify date : <๑๙/๐๑/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -228,17 +228,25 @@ export class DigitalTranscriptModel {
                     scredit: {
                         regis: util.doGetString(gpaInfoData.SCreditRegis),
                         earn: util.doGetString(gpaInfoData.SCreditEarn),
-                        compute:util.doGetString( gpaInfoData.SCreditCompute)
+                        compute:util.doGetString( gpaInfoData.SCreditCompute),
+                        product: util.doGetStringNumber(gpaInfoData.SProduct, 2),
+                        gpa: util.doGetStringNumber(gpaInfoData.SGPA, 2),
                     },
+                    /*
                     sproduct: util.doGetStringNumber(gpaInfoData.SProduct, 2),
                     sgpa: util.doGetStringNumber(gpaInfoData.SGPA, 2),
+                    */
                     ccredit: {
                         regis: util.doGetString(gpaInfoData.CCreditRegis),
                         earn: util.doGetString(gpaInfoData.CCreditEarn),
-                        compute: util.doGetString(gpaInfoData.CCreditCompute)
+                        compute: util.doGetString(gpaInfoData.CCreditCompute),
+                        product: util.doGetStringNumber(gpaInfoData.CProduct, 2),
+                        gpa: util.doGetStringNumber(gpaInfoData.CGPA, 2),    
                     },
+                    /*
                     cproduct: util.doGetStringNumber(gpaInfoData.CProduct, 2),
                     cgpa: util.doGetStringNumber(gpaInfoData.CGPA, 2),
+                    */
                     studentStatus: util.doGetString(gpaInfoData.StudentStatus),
                     flag: util.doGetString(gpaInfoData.Flag),
                     gradeFlag: util.doGetString(gpaInfoData.GradeFlag),
@@ -605,7 +613,15 @@ export class DigitalTranscriptModel {
                         }
                     },
                     postcode: util.doGetString(profileStudentData.PostcodeCode),
-                    schoolLevel: util.doGetString(profileStudentData.SchoolLevel)
+                    schoolLevel: util.doGetString(profileStudentData.SchoolLevel),
+                    status: {
+                        code: util.doGetString(profileStudentData.stdStatus),
+                        name: {
+                            th: util.doGetString(profileStudentData.stsNameTh),
+                            en: util.doGetString(profileStudentData.stsNameEn),
+                            group: util.doGetString(profileStudentData.stsGroup)
+                        }
+                    }
                 };
             }
         }
