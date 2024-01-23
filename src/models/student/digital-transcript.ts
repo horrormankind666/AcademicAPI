@@ -284,6 +284,7 @@ export class DigitalTranscriptModel {
 
                 gpaStatusDatas.forEach((gpaStatusData) => {
                     gpaStatusResult.data.push(<Schema.Student.DigitalTranscript.GPAStatus> {
+                        educationTypeSystem: util.doGetString(gpaStatusData.EducationTypeSystem),
                         year: util.doGetString(gpaStatusData.Year),
                         semester: {
                             name: util.doGetString(gpaStatusData.SemesterName),
@@ -294,7 +295,8 @@ export class DigitalTranscriptModel {
                             },
                             pointEarned: util.doGetString(gpaStatusData.SemesterPointEarned),
                             gpa: util.doGetStringNumber(gpaStatusData.SemesterGPA, 2),
-                            gpax: util.doGetStringNumber(gpaStatusData.SemesterGPAX, 2)
+                            gpax: util.doGetStringNumber(gpaStatusData.SemesterGPAX, 2),
+                            status: util.doGetString(gpaStatusData.SemesterStatus)
                         },
                         remark: util.doGetString(gpaStatusData.Remark),
                         line: {
