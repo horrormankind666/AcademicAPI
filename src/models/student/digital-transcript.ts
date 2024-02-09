@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๙/๐๕/๒๕๖๖>
-Modify date : <๑๙/๐๑/๒๕๖๗>
+Modify date : <๐๙/๐๒/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -18,14 +18,14 @@ const util: Util = new Util();
 
 export class DigitalTranscriptModel {
     async doGetFooter(studentCode: string | undefined): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
         }
-        
+
         let footerResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', 'sp_grdGetFooter');
 
         if (conn !== null &&
@@ -34,114 +34,114 @@ export class DigitalTranscriptModel {
                 let footerDatas: Array<any> = footerResult.datas;
                 let footerData: any = Object.assign({}, footerDatas[0]);
 
-                footerResult.data = <Schema.Student.DigitalTranscript.Footer> {
-                    studentCode: util.doGetString(footerData.StudentCode),
+                footerResult.data = <Schema.Student.DigitalTranscript.Footer>{
+                    studentCode: util.doGetString(footerData.studentCode),
                     fullname: {
                         title: {
-                            code: util.doGetString(footerData.TitleCode),
+                            code: util.doGetString(footerData.titleCode),
                             fullname: {
-                                th: util.doGetString(footerData.TitleTName),
-                                en: util.doGetString(footerData.TitleEName)
+                                th: util.doGetString(footerData.titleNameTH),
+                                en: util.doGetString(footerData.titleNameEN)
                             }
                         },
                         firstName: {
-                            th: util.doGetString(footerData.ThaiFName),
-                            en: util.doGetString(footerData.FirstName)
+                            th: util.doGetString(footerData.firstNameTH),
+                            en: util.doGetString(footerData.firstNameEN)
                         },
                         lastName: {
-                            th: util.doGetString(footerData.ThaiLName),
-                            en: util.doGetString(footerData.LastName)
+                            th: util.doGetString(footerData.lastNameTH),
+                            en: util.doGetString(footerData.lastNameEN)
                         }
                     },
-                    IDCard: util.doGetString(footerData.idCard),
+                    IDCard: util.doGetString(footerData.IDCard),
                     gender: {
                         fullname: {
-                            th: util.doGetString(footerData.SexNameTh),
-                            en: util.doGetString(footerData.SexNameEn)
+                            th: util.doGetString(footerData.genderNameTH),
+                            en: util.doGetString(footerData.genderNameEN)
                         },
-                        initials: util.doGetString(footerData.Gender)
+                        initials: util.doGetString(footerData.gender)
                     },
                     birthDate: {
-                        th: util.doGetString(footerData.BThaiDate),
-                        en: util.doGetString(footerData.BDate)
+                        th: util.doGetString(footerData.birthDateTH),
+                        en: util.doGetString(footerData.birthDateEN)
                     },
                     nationality: {
-                        code: util.doGetString(footerData.NationalityCode),
+                        code: util.doGetString(footerData.nationalityCode),
                         name: {
-                            th: util.doGetString(footerData.NationalityTname),
-                            en: util.doGetString(footerData.NationalityEname)
+                            th: util.doGetString(footerData.nationalityNameTH),
+                            en: util.doGetString(footerData.nationalityNameEN)
                         }
                     },
-                    email: footerData.Email,
+                    email: footerData.email,
                     degree: {
-                        level: util.doGetString(footerData.Degree),
+                        level: util.doGetString(footerData.degree),
                         name: {
-                            th: util.doGetString(footerData.DegreeTName),
-                            en: util.doGetString(footerData.DegreeEName)
+                            th: util.doGetString(footerData.degreeNameTH),
+                            en: util.doGetString(footerData.degreeNameEN)
                         }
                     },
                     faculty: {
                         code: util.doGetString(footerData.facultyCode),
                         name: {
-                            th: util.doGetString(footerData.FactTName),
+                            th: util.doGetString(footerData.FacultyNameTH),
                             en: {
-                                default: util.doGetString(footerData.FactEName),
-                                other: util.doGetString(footerData.FactEName1)
+                                default: util.doGetString(footerData.facultyNameEN),
+                                other: util.doGetString(footerData.facultyNameEN1)
                             }
                         }
                     },
                     program: {
-                        code: util.doGetString(footerData.ProgramCode),
+                        code: util.doGetString(footerData.programCode),
                         name: {
-                            th: util.doGetString(footerData.progNameTh),
-                            en: util.doGetString(footerData.progNameEn)
+                            th: util.doGetString(footerData.programNameTH),
+                            en: util.doGetString(footerData.programNameEN)
                         },
-                        year: util.doGetString(footerData.ProgYear),
-                        type: util.doGetString(footerData.ProgramType)
+                        year: util.doGetString(footerData.programYear),
+                        type: util.doGetString(footerData.programType)
                     },
                     major: {
-                        code: util.doGetString(footerData.MajorCode),
+                        code: util.doGetString(footerData.majorCode),
                         name: {
-                            th: util.doGetString(footerData.MajorTName),
-                            en: util.doGetString(footerData.MajorEName)
+                            th: util.doGetString(footerData.majorNameTH),
+                            en: util.doGetString(footerData.majorNameEN)
                         }
                     },
-                    groupNum: util.doGetString(footerData.GroupNum),
+                    groupNum: util.doGetString(footerData.groupNum),
                     interProgram: {
                         name: {
-                            th: util.doGetString(footerData.interProgramTh),
-                            en: util.doGetString(footerData.interProgram)
+                            th: util.doGetString(footerData.interProgramTH),
+                            en: util.doGetString(footerData.interProgramEN)
                         }
                     },
-                    studentStatus: util.doGetString(footerData.StudentStatus),
+                    studentStatus: util.doGetString(footerData.studentStatus),
                     admissionDate: {
-                        th: util.doGetString(footerData.admissionDateTh),
-                        en: util.doGetString(footerData.admissionDateEn)
+                        th: util.doGetString(footerData.admissionDateTH),
+                        en: util.doGetString(footerData.admissionDateEN)
                     },
                     graduateDate: {
-                        th: util.doGetString(footerData.graduateDateTh),
-                        en: util.doGetString(footerData.GDate)
+                        th: util.doGetString(footerData.graduateDateTH),
+                        en: util.doGetString(footerData.graduateDateEN)
                     },
-                    currentYear: util.doGetString(footerData.CurrentYear),
-                    lastYear: util.doGetString(footerData.LastYear),
-                    distinction: util.doGetString(footerData.Distinction),
-                    gradYear: util.doGetString(footerData.GradYear),
-                    quotaCode: util.doGetString(footerData.QuotaCode),
+                    graduateYear: util.doGetString(footerData.graduateYear),
+                    currentYear: util.doGetString(footerData.currentYear),
+                    lastYear: util.doGetString(footerData.lastYear),
+                    distinction: util.doGetString(footerData.distinction),
+                    quotaCode: util.doGetString(footerData.quotaCode),
                     BM: {
                         name: {
                             th: {
-                                1: util.doGetString(footerData.BMTName),
-                                2: util.doGetString(footerData.BMTName2)
+                                1: util.doGetString(footerData.bmNameTH),
+                                2: util.doGetString(footerData.bmNameTH2)
                             }
                         }
                     },
                     passedEnglishExam: util.doGetString(footerData.passedEnglishExam),
                     txtStudentPassed: {
-                        th: util.doGetString(footerData.txtStudentPassedTh),
-                        en: util.doGetString(footerData.txtStudentPassedEn)
+                        th: util.doGetString(footerData.txtStudentPassedTH),
+                        en: util.doGetString(footerData.txtStudentPassedEN)
                     },
                     praticeHrs: {
-                        th: util.doGetString(footerData.PraticeHrsTh),
+                        th: util.doGetString(footerData.praticeHrsTH),
                         en: null
                     }
                 };
@@ -149,8 +149,8 @@ export class DigitalTranscriptModel {
         }
 
         util.db.mssql.doClose(conn);
-        
-         return {
+
+        return {
             conn: conn,
             statusCode: footerResult.statusCode,
             data: (footerResult.data !== undefined ? footerResult.data : null),
@@ -162,15 +162,15 @@ export class DigitalTranscriptModel {
         lang: string | undefined,
         studentCode: string | undefined
     ): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
         }
 
-        let additionalInformationResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', ('sp_grdAdditionalInformation_' + lang));
+        let additionalInformationResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', ('sp_grdGetAdditionalInformation' + lang?.toUpperCase()));
 
         if (conn !== null &&
             additionalInformationResult.statusCode === 200) {
@@ -178,17 +178,17 @@ export class DigitalTranscriptModel {
                 let additionalInformationDatas: Array<any> = additionalInformationResult.datas;
                 let additionalInformationData: any = Object.assign({}, additionalInformationDatas[0]);
 
-                additionalInformationResult.data = <Schema.Student.DigitalTranscript.AdditionalInformation> {
+                additionalInformationResult.data = <Schema.Student.DigitalTranscript.AdditionalInformation>{
                     studentCode: util.doGetString(additionalInformationData.studentCode),
-                    hons: util.doGetString(additionalInformationData.Hons),
+                    hons: util.doGetString(additionalInformationData.hons),
                     thesisTitle: null
                 };
             }
         }
 
         util.db.mssql.doClose(conn);
-        
-         return {
+
+        return {
             conn: conn,
             statusCode: additionalInformationResult.statusCode,
             data: (additionalInformationResult.data !== undefined ? additionalInformationResult.data : null),
@@ -200,9 +200,9 @@ export class DigitalTranscriptModel {
         studentCode: string | undefined,
         quarter: string | undefined
     ): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
@@ -217,41 +217,33 @@ export class DigitalTranscriptModel {
                 let gpaInfoDatas: Array<any> = gpaInfoResult.datas;
                 let gpaInfoData: any = Object.assign({}, gpaInfoDatas[0]);
 
-                gpaInfoResult.data = <Schema.Student.DigitalTranscript.GPAInfo> {
-                    studentID: util.doGetString(gpaInfoData.StudentID),
-                    semester: util.doGetString(gpaInfoData.Semester),
-                    currentYear: util.doGetString(gpaInfoData.CurrentYear),
-                    programCode: util.doGetString(gpaInfoData.ProgramCode),
-                    majorCode: util.doGetString(gpaInfoData.MajorCode),
-                    groupNum: util.doGetString(gpaInfoData.GroupNum),
-                    subjectCount: util.doGetString(gpaInfoData.SubjectCount),
-                    scredit: {
-                        regis: util.doGetString(gpaInfoData.SCreditRegis),
-                        earn: util.doGetString(gpaInfoData.SCreditEarn),
-                        compute:util.doGetString( gpaInfoData.SCreditCompute),
-                        product: util.doGetStringNumber(gpaInfoData.SProduct, 2),
-                        gpa: util.doGetStringNumber(gpaInfoData.SGPA, 2),
+                gpaInfoResult.data = <Schema.Student.DigitalTranscript.GPAInfo>{
+                    studentCode: util.doGetString(gpaInfoData.studentCode),
+                    semester: util.doGetString(gpaInfoData.semester),
+                    currentYear: util.doGetString(gpaInfoData.currentYear),
+                    programCode: util.doGetString(gpaInfoData.programCode),
+                    majorCode: util.doGetString(gpaInfoData.majorCode),
+                    groupNum: util.doGetString(gpaInfoData.groupNum),
+                    subjectCount: util.doGetString(gpaInfoData.subjectCount),
+                    sCredit: {
+                        regis: util.doGetString(gpaInfoData.sCreditRegis),
+                        earn: util.doGetString(gpaInfoData.sCreditEarn),
+                        compute: util.doGetString(gpaInfoData.sCreditCompute),
+                        product: util.doGetStringNumber(gpaInfoData.sProduct, 2),
+                        gpa: util.doGetStringNumber(gpaInfoData.sGPA, 2),
                     },
-                    /*
-                    sproduct: util.doGetStringNumber(gpaInfoData.SProduct, 2),
-                    sgpa: util.doGetStringNumber(gpaInfoData.SGPA, 2),
-                    */
-                    ccredit: {
-                        regis: util.doGetString(gpaInfoData.CCreditRegis),
-                        earn: util.doGetString(gpaInfoData.CCreditEarn),
-                        compute: util.doGetString(gpaInfoData.CCreditCompute),
-                        product: util.doGetStringNumber(gpaInfoData.CProduct, 2),
-                        gpa: util.doGetStringNumber(gpaInfoData.CGPA, 2),    
+                    cCredit: {
+                        regis: util.doGetString(gpaInfoData.cCreditRegis),
+                        earn: util.doGetString(gpaInfoData.cCreditEarn),
+                        compute: util.doGetString(gpaInfoData.cCreditCompute),
+                        product: util.doGetStringNumber(gpaInfoData.cProduct, 2),
+                        gpa: util.doGetStringNumber(gpaInfoData.cGPA, 2),
                     },
-                    /*
-                    cproduct: util.doGetStringNumber(gpaInfoData.CProduct, 2),
-                    cgpa: util.doGetStringNumber(gpaInfoData.CGPA, 2),
-                    */
-                    studentStatus: util.doGetString(gpaInfoData.StudentStatus),
-                    flag: util.doGetString(gpaInfoData.Flag),
-                    gradeFlag: util.doGetString(gpaInfoData.GradeFlag),
-                    leaveSts: util.doGetString(gpaInfoData.LeaveSts),
-                    probationCode: util.doGetString(gpaInfoData.ProbationCode)
+                    studentStatus: util.doGetString(gpaInfoData.studentStatus),
+                    flag: util.doGetString(gpaInfoData.flag),
+                    gradeFlag: util.doGetString(gpaInfoData.gradeFlag),
+                    leaveSts: util.doGetString(gpaInfoData.leaveStatus),
+                    probationCode: util.doGetString(gpaInfoData.probationCode)
                 }
             }
         }
@@ -265,9 +257,9 @@ export class DigitalTranscriptModel {
     }
 
     async doGetListGPAStatus(studentCode: string | undefined): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
@@ -283,24 +275,24 @@ export class DigitalTranscriptModel {
                 gpaStatusResult.data = [];
 
                 gpaStatusDatas.forEach((gpaStatusData) => {
-                    gpaStatusResult.data.push(<Schema.Student.DigitalTranscript.GPAStatus> {
-                        educationTypeSystem: util.doGetString(gpaStatusData.EducationTypeSystem),
-                        year: util.doGetString(gpaStatusData.Year),
+                    gpaStatusResult.data.push(<Schema.Student.DigitalTranscript.GPAStatus>{
+                        educationTypeSystem: util.doGetString(gpaStatusData.educationTypeSystem),
+                        year: util.doGetString(gpaStatusData.year),
                         semester: {
-                            name: util.doGetString(gpaStatusData.SemesterName),
+                            name: util.doGetString(gpaStatusData.semesterName),
                             credit: {
-                                earned: util.doGetString(gpaStatusData.SemesterCreditEarned),
-                                value: util.doGetString(gpaStatusData.SemesterCreditValue),
-                                calculated: util.doGetString(gpaStatusData.SemesterCreditCalculated)
+                                earned: util.doGetString(gpaStatusData.semesterCreditEarned),
+                                value: util.doGetString(gpaStatusData.semesterCreditValue),
+                                calculated: util.doGetString(gpaStatusData.semesterCreditCalculated)
                             },
-                            pointEarned: util.doGetString(gpaStatusData.SemesterPointEarned),
-                            gpa: util.doGetStringNumber(gpaStatusData.SemesterGPA, 2),
-                            gpax: util.doGetStringNumber(gpaStatusData.SemesterGPAX, 2),
-                            status: util.doGetString(gpaStatusData.SemesterStatus)
+                            pointEarned: util.doGetString(gpaStatusData.semesterPointEarned),
+                            gpa: util.doGetStringNumber(gpaStatusData.semesterGPA, 2),
+                            gpax: util.doGetStringNumber(gpaStatusData.semesterGPAX, 2),
+                            status: util.doGetString(gpaStatusData.semesterStatus)
                         },
-                        remark: util.doGetString(gpaStatusData.Remark),
+                        remark: util.doGetString(gpaStatusData.remark),
                         line: {
-                            one: util.doGetString(gpaStatusData.LineOne)
+                            one: util.doGetString(gpaStatusData.lineOne)
                         }
                     });
                 });
@@ -320,16 +312,16 @@ export class DigitalTranscriptModel {
         studentCode: string | undefined,
         quarter: string | undefined
     ): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
             connRequest.input('quarter', quarter);
         }
 
-        let subjectRegistrationResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', ('sp_grdGetListSubjectRegistration_' + lang));
+        let subjectRegistrationResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', ('sp_grdGetListSubjectRegistration' + lang?.toUpperCase()));
 
         if (conn !== null &&
             subjectRegistrationResult.statusCode === 200) {
@@ -339,33 +331,33 @@ export class DigitalTranscriptModel {
                 subjectRegistrationResult.data = [];
 
                 subjectRegistrationDatas.forEach((subjectRegistrationData) => {
-                    subjectRegistrationResult.data.push(<Schema.Student.DigitalTranscript.SubjectRegistration> {
+                    subjectRegistrationResult.data.push(<Schema.Student.DigitalTranscript.SubjectRegistration>{
                         course: {
-                            number: util.doGetString(subjectRegistrationData.CourseNumber),
+                            number: util.doGetString(subjectRegistrationData.courseNumber),
                             title: {
-                                default: util.doGetString(subjectRegistrationData.CourseTitle),
-                                th: util.doGetString(subjectRegistrationData.CourseTitleTh),
-                                en: util.doGetString(subjectRegistrationData.CourseTitleEn)
+                                default: util.doGetString(subjectRegistrationData.courseTitle),
+                                th: util.doGetString(subjectRegistrationData.courseTitleTH),
+                                en: util.doGetString(subjectRegistrationData.courseTitleEN)
                             },
                             credit: {
-                                earned: util.doGetString(subjectRegistrationData.CourseCreditEarned),
-                                value: util.doGetString(subjectRegistrationData.CourseCreditValue)
+                                earned: util.doGetString(subjectRegistrationData.courseCreditEarned),
+                                value: util.doGetString(subjectRegistrationData.courseCreditValue)
                             },
                             academic: {
                                 grade: {
-                                    number: util.doGetStringNumber(subjectRegistrationData.CourseAcademicGrade, 2),
-                                    text: util.doGetString(subjectRegistrationData.CourseAcademicGradeText)
+                                    number: util.doGetStringNumber(subjectRegistrationData.courseAcademicGrade, 2),
+                                    text: util.doGetString(subjectRegistrationData.courseAcademicGradeText)
                                 }
                             },
-                            pointEarned: util.doGetStringNumber(subjectRegistrationData.CoursePointEarned, 2),
+                            pointEarned: util.doGetStringNumber(subjectRegistrationData.coursePointEarned, 2),
                             transferCode: null,
                         },
-                        typeCode: util.doGetString(subjectRegistrationData.TypeCode),
-                        educationTypeSystem: util.doGetString(subjectRegistrationData.EducationTypeSystem),
+                        typeCode: util.doGetString(subjectRegistrationData.typeCode),
+                        educationTypeSystem: util.doGetString(subjectRegistrationData.educationTypeSystem),
                         semester: {
-                            name: util.doGetString(subjectRegistrationData.SemesterName)
+                            name: util.doGetString(subjectRegistrationData.semesterName)
                         },
-                        year: util.doGetString(subjectRegistrationData.Year),
+                        year: util.doGetString(subjectRegistrationData.year),
                         organization: {
                             name: null
                         },
@@ -386,9 +378,9 @@ export class DigitalTranscriptModel {
     }
 
     async doGetListSubjectTransfer(studentCode: string | undefined): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
@@ -404,38 +396,38 @@ export class DigitalTranscriptModel {
                 subjectTransferResult.data = [];
 
                 subjectTransferDatas.forEach((subjectTransferData) => {
-                    subjectTransferResult.data.push(<Schema.Student.DigitalTranscript.SubjectRegistration> {
+                    subjectTransferResult.data.push(<Schema.Student.DigitalTranscript.SubjectRegistration>{
                         course: {
-                            number: util.doGetString(subjectTransferData.CourseNumber),
+                            number: util.doGetString(subjectTransferData.courseNumber),
                             title: {
-                                default: util.doGetString(subjectTransferData.CourseTitle),
-                                th: util.doGetString(subjectTransferData.CourseTitleTh),
-                                en: util.doGetString(subjectTransferData.CourseTitleEn)
+                                default: util.doGetString(subjectTransferData.courseTitle),
+                                th: util.doGetString(subjectTransferData.courseTitleTH),
+                                en: util.doGetString(subjectTransferData.courseTitleEN)
                             },
                             credit: {
-                                earned: util.doGetString(subjectTransferData.CourseCreditEarned),
-                                value: util.doGetString(subjectTransferData.CourseCreditValue)
+                                earned: util.doGetString(subjectTransferData.courseCreditEarned),
+                                value: util.doGetString(subjectTransferData.courseCreditValue)
                             },
                             academic: {
                                 grade: {
-                                    number: util.doGetStringNumber(subjectTransferData.CourseAcademicGrade, 2),
-                                    text: util.doGetString(subjectTransferData.CourseAcademicGradeText)
+                                    number: util.doGetStringNumber(subjectTransferData.courseAcademicGrade, 2),
+                                    text: util.doGetString(subjectTransferData.courseAcademicGradeText)
                                 }
                             },
-                            pointEarned: util.doGetStringNumber(subjectTransferData.CoursePointEarned, 2),
-                            transferCode: util.doGetString(subjectTransferData.CourseTransferCode),
+                            pointEarned: util.doGetStringNumber(subjectTransferData.coursePointEarned, 2),
+                            transferCode: util.doGetString(subjectTransferData.courseTransferCode),
                         },
-                        typeCode: util.doGetString(subjectTransferData.TypeCode),
-                        educationTypeSystem: util.doGetString(subjectTransferData.EducationTypeSystem),
+                        typeCode: util.doGetString(subjectTransferData.typeCode),
+                        educationTypeSystem: util.doGetString(subjectTransferData.educationTypeSystem),
                         semester: {
-                            name: util.doGetString(subjectTransferData.SemesterName)
+                            name: util.doGetString(subjectTransferData.semesterName)
                         },
-                        year: util.doGetString(subjectTransferData.Year),
+                        year: util.doGetString(subjectTransferData.year),
                         organization: {
-                            name: util.doGetString(subjectTransferData.OrganizationName)
+                            name: util.doGetString(subjectTransferData.organizationName)
                         },
                         program: {
-                            name: util.doGetString(subjectTransferData.ProgramName)
+                            name: util.doGetString(subjectTransferData.programName)
                         }
                     });
                 });
@@ -451,7 +443,7 @@ export class DigitalTranscriptModel {
     }
 
     async doGetRegistrar(): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
 
         if (conn !== null)
@@ -464,22 +456,22 @@ export class DigitalTranscriptModel {
             if (registrarResult.datas.length !== 0) {
                 let registrarDatas: Array<any> = registrarResult.datas;
                 let registrarData: any = Object.assign({}, registrarDatas[0]);
-                
-                registrarResult.data = <Schema.Student.DigitalTranscript.Registrar> {
+
+                registrarResult.data = <Schema.Student.DigitalTranscript.Registrar>{
                     ID: util.doGetString(registrarData.ID),
-                    fullname: util.doGetString(registrarData.FullName),
-                    name: util.doGetString(registrarData.Name),
-                    rposition: util.doGetString(registrarData.RPosition),
-                    title: util.doGetString(registrarData.Title),
-                    dlevel: util.doGetString(registrarData.DLevel),
-                    active: util.doGetString(registrarData.Active)
+                    fullname: util.doGetString(registrarData.fullNameEN),
+                    name: util.doGetString(registrarData.fullNameTH),
+                    rposition: util.doGetString(registrarData.rPosition),
+                    title: util.doGetString(registrarData.title),
+                    dlevel: util.doGetString(registrarData.dLevel),
+                    active: util.doGetString(registrarData.active)
                 };
             }
         }
 
         util.db.mssql.doClose(conn);
-        
-         return {
+
+        return {
             conn: conn,
             statusCode: registrarResult.statusCode,
             data: (registrarResult.data !== undefined ? registrarResult.data : null),
@@ -488,9 +480,9 @@ export class DigitalTranscriptModel {
     }
 
     async doGetListSemesterStudent(studentCode: string | undefined): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
@@ -506,11 +498,11 @@ export class DigitalTranscriptModel {
                 semesterStudentResult.data = [];
 
                 semesterStudentDatas.forEach((semesterStudentData) => {
-                    semesterStudentResult.data.push(<Schema.Student.DigitalTranscript.SemesterStudent> {
+                    semesterStudentResult.data.push(<Schema.Student.DigitalTranscript.SemesterStudent>{
                         semester: {
-                            code: util.doGetString(semesterStudentData.Semester),
+                            code: util.doGetString(semesterStudentData.semester),
                             name: {
-                                th: util.doGetString(semesterStudentData.SemesterThai)
+                                th: util.doGetString(semesterStudentData.semesterTH)
                             }
                         }
                     });
@@ -530,15 +522,15 @@ export class DigitalTranscriptModel {
         lang: string | undefined,
         studentCode: string | undefined
     ): Promise<Schema.Result> {
-        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect(process.env.DATABASE_MUGRADING);
+        let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        
+
         if (conn !== null) {
             connRequest = conn.request();
             connRequest.input('studentCode', studentCode);
         }
 
-        let profileStudentResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', ('sp_grdProfileStudent_' + lang));
+        let profileStudentResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', ('sp_grdGetProfileStudent' + lang?.toUpperCase()));
 
         if (conn !== null &&
             profileStudentResult.statusCode === 200) {
@@ -546,82 +538,82 @@ export class DigitalTranscriptModel {
                 let profileStudentDatas: Array<any> = profileStudentResult.datas;
                 let profileStudentData: any = Object.assign({}, profileStudentDatas[0]);
 
-                profileStudentResult.data = <Schema.Student.DigitalTranscript.ProfileStudent> {
+                profileStudentResult.data = <Schema.Student.DigitalTranscript.ProfileStudent>{
                     dataSubjectID: {
-                        studentID: util.doGetString(profileStudentData.DataSubjectIDStudentID),
-                        nidn: util.doGetString(profileStudentData.DataSubjectIDNIDN),
-                        ccpt: util.doGetString(profileStudentData.DataSubjectIDCCPT),
+                        studentID: util.doGetString(profileStudentData.dataSubjectIDStudentID),
+                        nidn: util.doGetString(profileStudentData.dataSubjectIDNIDN),
+                        ccpt: util.doGetString(profileStudentData.dataSubjectIDCCPT),
                     },
                     namePrefix: {
-                        th: util.doGetString(profileStudentData.NamePrefixTh),
-                        en: util.doGetString(profileStudentData.NamePrefixEn)
+                        th: util.doGetString(profileStudentData.namePrefixTH),
+                        en: util.doGetString(profileStudentData.namePrefixEN)
                     },
                     givenName: {
-                        default: util.doGetString(profileStudentData.GivenName),
-                        th: util.doGetString(profileStudentData.GivenNameTh),
-                        en: util.doGetString(profileStudentData.GivenNameEn)
+                        default: util.doGetString(profileStudentData.givenName),
+                        th: util.doGetString(profileStudentData.givenNameTH),
+                        en: util.doGetString(profileStudentData.givenNameEN)
                     },
                     middleName: {
-                        th: util.doGetString(profileStudentData.MiddleNameTh),
-                        en: util.doGetString(profileStudentData.MiddleNameEn)
+                        th: util.doGetString(profileStudentData.middleNameTH),
+                        en: util.doGetString(profileStudentData.middleNameEN)
                     },
                     familyName: {
-                        th: util.doGetString(profileStudentData.FamilyNameTh),
-                        en: util.doGetString(profileStudentData.FamilyNameEn)
+                        th: util.doGetString(profileStudentData.familyNameTH),
+                        en: util.doGetString(profileStudentData.familyNameEN)
                     },
-                    gender: util.doGetString(profileStudentData.Gender),
-                    birthDate: util.doGetStringDate(profileStudentData.BirthDate, 'en-GB'),
-                    nationality: util.doGetString(profileStudentData.Nationality),
-                    countryCode: util.doGetString(profileStudentData.ResidentCountryOrTerritoryCode),
-                    personImage: util.doGetString(profileStudentData.PersonImage),
+                    gender: util.doGetString(profileStudentData.gender),
+                    birthDate: util.doGetStringDate(profileStudentData.birthDate, 'en-GB'),
+                    nationality: util.doGetString(profileStudentData.nationality),
+                    countryCode: util.doGetString(profileStudentData.residentCountryOrTerritoryCode),
+                    personImage: util.doGetString(profileStudentData.personImage),
                     faculty: {
-                        name: util.doGetString(profileStudentData.FacultyName)
+                        name: util.doGetString(profileStudentData.facultyName)
                     },
                     program: {
-                        ID: util.doGetString(profileStudentData.ProgramID),
-                        name: util.doGetString(profileStudentData.ProgramName)
+                        ID: util.doGetString(profileStudentData.programID),
+                        name: util.doGetString(profileStudentData.programName)
                     },
-                    major: util.doGetString(profileStudentData.Major),
-                    minor: util.doGetString(profileStudentData.Minor),
-                    degree: util.doGetString(profileStudentData.Degree),
-                    dateOfAdmission: util.doGetStringDate(profileStudentData.DateOfAdmission, 'en-GB'),
-                    dateOfGraduation: util.doGetStringDate(profileStudentData.DateOfGraduation, 'en-GB'),
-                    creditsTranferred: util.doGetString(profileStudentData.CreditsTranferred),
+                    major: util.doGetString(profileStudentData.major),
+                    minor: util.doGetString(profileStudentData.minor),
+                    degree: util.doGetString(profileStudentData.degree),
+                    dateOfAdmission: util.doGetStringDate(profileStudentData.dateOfAdmission, 'en-GB'),
+                    dateOfGraduation: util.doGetStringDate(profileStudentData.dateOfGraduation, 'en-GB'),
+                    creditsTranferred: util.doGetString(profileStudentData.creditsTranferred),
                     organization: {
-                        ID: util.doGetString(profileStudentData.OrganizationID),
-                        name: util.doGetString(profileStudentData.OrganizationName)
+                        ID: util.doGetString(profileStudentData.organizationID),
+                        name: util.doGetString(profileStudentData.organizationName)
                     },
                     building: {
-                        number: util.doGetString(profileStudentData.BuildingNumber),
-                        name: util.doGetString(profileStudentData.BuildingName)
+                        number: util.doGetString(profileStudentData.buildingNumber),
+                        name: util.doGetString(profileStudentData.buildingName)
                     },
                     street: {
-                        name: util.doGetString(profileStudentData.StreetName),
-                        additional: util.doGetString(profileStudentData.AdditionalStreetName)
+                        name: util.doGetString(profileStudentData.streetName),
+                        additional: util.doGetString(profileStudentData.additionalStreetName)
                     },
                     city: {
                         ID: null,
-                        name: util.doGetString(profileStudentData.CityName),
+                        name: util.doGetString(profileStudentData.cityName),
                         subDivision: {
                             ID: null,
-                            name: util.doGetString(profileStudentData.CitySubDivisionName)
+                            name: util.doGetString(profileStudentData.citySubDivisionName)
                         }
                     },
                     country: {
-                        code: util.doGetString(profileStudentData.CountryCode),
+                        code: util.doGetString(profileStudentData.countryCode),
                         subDivision: {
-                            code: util.doGetString(profileStudentData.CountrySubDivisionCode),
-                            name: util.doGetString(profileStudentData.CountrySubDivisionName)
+                            code: util.doGetString(profileStudentData.countrySubDivisionCode),
+                            name: util.doGetString(profileStudentData.countrySubDivisionName)
                         }
                     },
-                    postcode: util.doGetString(profileStudentData.PostcodeCode),
-                    schoolLevel: util.doGetString(profileStudentData.SchoolLevel),
+                    postcode: util.doGetString(profileStudentData.postcode),
+                    schoolLevel: util.doGetString(profileStudentData.schoolLevel),
                     status: {
-                        code: util.doGetString(profileStudentData.stdStatus),
+                        code: util.doGetString(profileStudentData.statusCode),
                         name: {
-                            th: util.doGetString(profileStudentData.stsNameTh),
-                            en: util.doGetString(profileStudentData.stsNameEn),
-                            group: util.doGetString(profileStudentData.stsGroup)
+                            th: util.doGetString(profileStudentData.statusNameTH),
+                            en: util.doGetString(profileStudentData.statusNameEN),
+                            group: util.doGetString(profileStudentData.statusGroup)
                         }
                     }
                 };
@@ -629,8 +621,8 @@ export class DigitalTranscriptModel {
         }
 
         util.db.mssql.doClose(conn);
-        
-         return {
+
+        return {
             conn: conn,
             statusCode: profileStudentResult.statusCode,
             data: (profileStudentResult.data !== undefined ? profileStudentResult.data : null),
