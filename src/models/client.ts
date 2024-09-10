@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๐๘/๐๕/๒๕๖๖>
+Modify date : <๐๖/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -69,7 +69,8 @@ export class ClientModel {
                     ID: clientData.ID,
                     secret: clientData.secret,
                     systemKey: clientData.systemKey,
-                    apiKey: clientData.apiKey
+                    apiKey: clientData.apiKey,
+                    verifyKey: clientData.verifyKey
                 };
             }
         }

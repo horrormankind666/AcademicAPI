@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๑๕/๐๕/๒๕๖๖>
+Modify date : <๐๖/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -29,7 +29,8 @@ export namespace Schema {
         ID: string,
         secret: string,
         systemKey: string,
-        apiKey: string
+        apiKey: string,
+        verifyKey: string
     }
 
     export namespace Student {

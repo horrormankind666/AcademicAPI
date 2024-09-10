@@ -88,7 +88,13 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
 });
 
 router.post('/Verify', async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
-    let tokenVerifiedResult: Schema.Result = await util.authorization.jwtClient.doTokenVerify(req);
+    let client: any = {
+        ID: ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null),
+        secret: ((req.headers.clientsecret !== undefined) && (req.headers.clientsecret.length !== 0) ? req.headers.clientsecret : null)
+    };
+    let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
+    let clientData: Schema.Client = Object.assign({}, clientResult.data);
+    let tokenVerifiedResult: Schema.Result = await util.authorization.jwtClient.doTokenVerify(req, clientData);
 
     res.send(util.doAPIMessage(tokenVerifiedResult));
 });

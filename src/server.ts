@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๐๘/๐๕/๒๕๖๖>
+Modify date : <๐๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -13,7 +13,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Response, NextFunction, Router } from 'express';
-import request from 'request';
 
 import { Util } from './util';
 import { Schema } from './models/schema';
@@ -23,6 +22,7 @@ import { ClientModel } from './models/client';
 import tokenRoute from './routes/token';
 import studentProfileRoute from './routes/student/profile';
 import studentDigitalTranscriptRoute from './routes/student/digital-transcript';
+import studentActivityTranscriptRoute from './routes/student/activity-transcript';
 
 import studentProfileGraphql from './graphql/student/profile';
 
@@ -40,14 +40,14 @@ app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
+app.use(async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     let urls: Array<string> = (req.url.split('/'));
     let url: string | null = (urls.length !== 0 ? (urls[1].length !== 0 ? urls[1] : null) : null);
     let client: any = {
         ID: ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null),
         secret: ((req.headers.clientsecret !== undefined) && (req.headers.clientsecret.length !== 0) ? req.headers.clientsecret : null)
     };
-    
+
     if (url !== null) {
         if (['Student'].includes(url) === true) {
             /*
@@ -114,6 +114,41 @@ app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
                     message: 'unauthorized'
                 }));
             */
+
+            /*
+            if (clientID === client.ID &&
+                systemKey === process.env.SYSTEM_KEY) {
+                let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req);
+                
+                if (tokenResult.statusCode === 200 &&
+                    tokenResult.data.payload !== null) {
+                    req.payload = tokenResult.data.payload;
+
+                    if (tokenResult.data.clientID === client.ID &&
+                        req.payload.SystemKey === process.env.SYSTEM_KEY)
+                        next();
+                    else
+                        res.send(util.doAPIMessage({
+                            statusCode: 401,
+                            data: null,
+                            message: 'unauthorized'
+                        }));
+                }
+                else
+                    res.send(util.doAPIMessage({
+                        statusCode: tokenResult.statusCode,
+                        data: null,
+                        message: tokenResult.message
+                    }));
+            }
+            else
+                res.send(util.doAPIMessage({
+                    statusCode: 401,
+                    data: null,
+                    message: 'unauthorized'
+                }));
+            */
+
             await requestModel.doSet(req, client.ID);
 
             if (client.ID !== null &&
@@ -129,16 +164,47 @@ app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
                 }
 
                 if (clientID === client.ID &&
-                    systemKey === process.env.SYSTEM_KEY) {
-                    let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req);
+                    systemKey !== null) {
+                    let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
 
-                    if (tokenResult.statusCode === 200 &&
-                        tokenResult.data.payload !== null) {
-                        req.payload = tokenResult.data.payload;
+                    if (clientResult.conn !== null &&
+                        clientResult.statusCode === 200) {
+                        if (clientResult.data !== null) {
+                            let clientData: Schema.Client = Object.assign({}, clientResult.data);
 
-                        if (tokenResult.data.clientID === client.ID &&
-                            req.payload.SystemKey === process.env.SYSTEM_KEY)
-                            next();
+                            if (clientID === clientData.ID &&
+                                client.ID == clientData.ID &&
+                                systemKey === clientData.systemKey) {
+                                let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req, clientData);
+
+                                if (tokenResult.statusCode === 200 &&
+                                    tokenResult.data.payload !== null) {
+                                    req.payload = tokenResult.data.payload;
+
+                                    if (tokenResult.data.clientID === client.ID &&
+                                        req.payload.SystemKey === clientData.systemKey)
+                                        next();
+                                    else
+                                        res.send(util.doAPIMessage({
+                                            statusCode: 401,
+                                            data: null,
+                                            message: 'unauthorized'
+                                        }));
+                                }
+                                else
+                                    res.send(util.doAPIMessage({
+                                        statusCode: tokenResult.statusCode,
+                                        data: null,
+                                        message: tokenResult.message
+                                    }));
+                            }
+                            else
+                                res.send(util.doAPIMessage({
+                                    statusCode: 401,
+                                    data: null,
+                                    message: 'unauthorized'
+                                }));
+                        }
                         else
                             res.send(util.doAPIMessage({
                                 statusCode: 401,
@@ -148,9 +214,9 @@ app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
                     }
                     else
                         res.send(util.doAPIMessage({
-                            statusCode: tokenResult.statusCode,
-                            data: null,
-                            message: tokenResult.message
+                            statusCode: clientResult.statusCode,
+                            data: clientResult.data,
+                            message: (clientResult.message !== undefined ? clientResult.message : null)
                         }));
                 }
                 else
@@ -159,6 +225,7 @@ app.use(async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
                         data: null,
                         message: 'unauthorized'
                     }));
+
             }
             else
                 res.send(util.doAPIMessage({
@@ -202,6 +269,7 @@ app.get('/ClientSecret/Get/(:clientID)/(:systemKey)', (req: Schema.TypeRequest, 
 router.use('/Token', tokenRoute);
 router.use('/Student/Profile', studentProfileRoute);
 router.use('/Student/DigitalTranscript', studentDigitalTranscriptRoute);
+router.use('/Student/ActivityTranscript', studentActivityTranscriptRoute);
 router.use('/Graphql/Student/Profile', studentProfileGraphql);
 
 app.listen(process.env.PORT, () => {

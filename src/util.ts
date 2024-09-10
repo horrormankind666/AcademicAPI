@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๒๕/๐๕/๒๕๖๖>
+Modify date : <๐๖/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -211,14 +211,15 @@ class Authorization {
         },
         doGetPublicKey(
             req: Schema.TypeRequest,
-            tokenAccess: string | null
+            tokenAccess: string | null,
+            verifyKey: string | null
         ): Promise<string | null> {
             let options: request.CoreOptions = {
                 method: 'GET',
                 headers: {
                     'content-type': 'text/plain',
                     'user-agent': req.headers['user-agent'],
-                    'package': btoa(tokenAccess + '.' + process.env.VERIFY_KEY)
+                    'package': btoa(tokenAccess + '.' + verifyKey)
                 }
             };
             
@@ -245,7 +246,10 @@ class Authorization {
 
             return true;
         },
-        async doTokenVerify(req: Schema.TypeRequest): Promise<Schema.Result> {
+        async doTokenVerify(
+            req: Schema.TypeRequest,
+            clientData: Schema.Client
+        ): Promise<Schema.Result> {
             let token: any = ((req.headers.token !== undefined) && (req.headers.token.length !== 0) ? req.headers.token : null);
             let CUIDs: Array<string> | null = null;
             let status: boolean = true;
@@ -259,7 +263,7 @@ class Authorization {
                 if (CUIDs !== null &&
                     CUIDs.length === 2) {
                     let tokenAccess: string = CUIDs[0];
-                    let publicKey: string | null = await this.doGetPublicKey(req, tokenAccess);
+                    let publicKey: string | null = await this.doGetPublicKey(req, tokenAccess, clientData.verifyKey);
 
                     if (publicKey !== null) {
                         try {
@@ -316,7 +320,10 @@ class Authorization {
                 message: message
             };
         },
-        async doTokenInfo(req: Schema.TypeRequest): Promise<Schema.Result> {
+        async doTokenInfo(
+            req: Schema.TypeRequest,
+            clientData: Schema.Client
+        ): Promise<Schema.Result> {
             let authorization: string | undefined = req.headers.authorization;
             let clientID: string | null = null;
             let statusCode: number = 200;
@@ -329,8 +336,8 @@ class Authorization {
                     let tokenVerifiedResult: Schema.Result;
 
                     req.headers.token = token;
-                    tokenVerifiedResult = await this.doTokenVerify(req);
-
+                    tokenVerifiedResult = await this.doTokenVerify(req, clientData);
+                    
                     if (tokenVerifiedResult.status === true &&
                         tokenVerifiedResult.statusCode === 200) {
                         let CUIDs: Array<string> | null = authorization.substring("Bearer ".length).trim().split('|');
