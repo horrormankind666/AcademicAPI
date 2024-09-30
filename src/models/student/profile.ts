@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๖/๐๑/๒๕๖๖>
-Modify date : <๐๑/๐๒/๒๕๖๖>
+Modify date : <๒๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -31,10 +31,10 @@ export class ProfileModel {
         
         if (conn !== null &&
             personIDResult.statusCode === 200) {
-            if (personIDResult.datas.length !== 0)
+            if (util.doIsEmpty(personIDResult.datas) === false)
                 personID = personIDResult.datas[0].personId;
             
-            if (personID !== null) {
+            if (util.doIsEmpty(personID) === false) {
                 let studentCodeTable: mssql.Table = new mssql.Table();
 
                 studentCodeTable.columns.add('id', mssql.NVarChar(20));
@@ -46,7 +46,7 @@ export class ProfileModel {
                 profileResult = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', 'sp_perGetListPersonStudentInfo');
                 
                 if (profileResult.statusCode === 200) {
-                    if (profileResult.datas.length !== 0) {
+                    if (util.doIsEmpty(profileResult.datas) === false) {
                         let profileDatas: Array<any> = profileResult.datas;
                         let profileData: any = Object.assign({}, profileDatas[0]);
 
@@ -489,7 +489,7 @@ export class ProfileModel {
         return {
             conn: conn,
             statusCode: profileResult.statusCode,
-            data: (profileResult.data !== undefined ? profileResult.data : null),
+            data: (util.doIsEmpty(profileResult.data) === false ? profileResult.data : null),
             message: profileResult.message
         };
     }

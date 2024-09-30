@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๘/๐๑/๒๕๖๖>
-Modify date : <๑๐/๐๕/๒๕๖๖>
+Modify date : <๒๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -22,29 +22,31 @@ const clientModel: ClientModel = new ClientModel();
 
 router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     let client: any = {
-        ID: ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null),
-        secret: ((req.headers.clientsecret !== undefined) && (req.headers.clientsecret.length !== 0) ? req.headers.clientsecret : null)
+        ID: util.doGetString(req.headers.clientid),
+        secret: util.doGetString(req.headers.clientsecret)
     };
 
-    if (client.ID !== null &&
-        client.secret !== null) {
+    if (util.doIsEmpty(client.ID) === false &&
+        util.doIsEmpty(client.secret) === false) {
         let CUIDs: Array<string> | null = util.doParseCUID(client.secret);
         let clientID: string | null = null;
-
-        if (CUIDs !== null)
-            clientID = (CUIDs[0].length !== 0 ? CUIDs[0] : null);
+        
+        if (util.doIsEmpty(CUIDs) === false) {
+            CUIDs = Object.assign(new Array<string>(), CUIDs);
+            clientID = CUIDs[0];
+        }
         
         if (client.ID === clientID) {
             let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
 
             if (clientResult.conn !== null &&
                 clientResult.statusCode === 200) {
-                if (clientResult.data !== null) {
+                if (util.doIsEmpty(clientResult.data) === false) {
                     let clientData: Schema.Client = Object.assign({}, clientResult.data);
                     let tokenAccessResult: Schema.Result = await util.authorization.jwtClient.doGetTokenAccess(req, clientData.apiKey);
                     
                     if (tokenAccessResult.status === true &&
-                        tokenAccessResult.data !== null) {
+                        util.doIsEmpty(tokenAccessResult.data) === false) {
                         res.send(util.doAPIMessage({
                             statusCode: 200,
                             data: (tokenAccessResult.data + '|' + btoa(client.ID).split('').reverse().join('')),
@@ -69,7 +71,7 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
                 res.send(util.doAPIMessage({
                     statusCode: clientResult.statusCode,
                     data: clientResult.data,
-                    message: (clientResult.message !== undefined ? clientResult.message : null)
+                    message: (util.doIsEmpty(clientResult.message) === false ? clientResult.message : null)
                 }));
         }
         else
@@ -89,8 +91,8 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
 
 router.post('/Verify', async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     let client: any = {
-        ID: ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null),
-        secret: ((req.headers.clientsecret !== undefined) && (req.headers.clientsecret.length !== 0) ? req.headers.clientsecret : null)
+        ID: util.doGetString(req.headers.clientid),
+        secret: util.doGetString(req.headers.clientsecret)
     };
     let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
     let clientData: Schema.Client = Object.assign({}, clientResult.data);

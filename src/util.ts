@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๐๖/๐๙/๒๕๖๗>
+Modify date : <๒๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -13,7 +13,7 @@ import atob from 'atob';
 import btoa from 'btoa';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import mssql from 'mssql';
+import mssql, { DateTime } from 'mssql';
 import pg from 'pg';
 import request from 'request';
 import ticksToDate from 'ticks-to-date';
@@ -99,10 +99,11 @@ class DB {
             } 
         },
         async doConnect(database?: string | undefined): Promise<mssql.ConnectionPool | null> {
+            let util: Util = new Util();
             let conn: mssql.ConnectionPool | null = null;
             
             try {
-                process.env.MSSQL_DATABASE = (database !== undefined ? database : process.env.DATABASE_INFINITY);
+                process.env.MSSQL_DATABASE = (util.doIsEmpty(database) === false ? database : process.env.DATABASE_INFINITY);
                 this.config.database = process.env.MSSQL_DATABASE;
 
                 conn = await mssql.connect(this.config);
@@ -163,7 +164,7 @@ class DB {
                     conn: conn,
                     statusCode: 503,
                     datas: [],
-                    message: JSON.stringify(error)
+                    message: error
                 };
             }
         },
@@ -180,6 +181,7 @@ class Authorization {
             req: Schema.TypeRequest,
             apiKey: string
         ): Promise<Schema.Result> {
+            let util: Util = new Util();
             let options: request.CoreOptions = {
                 method: 'GET',
                 headers: {
@@ -190,7 +192,7 @@ class Authorization {
             
             return new Promise((resolve, reject) => {
                 request(('https://jwt.mahidol.ac.th/v1/access/' + apiKey), options, (error: any, result: any) => {
-                    if (error === null &&
+                    if (util.doIsEmpty(error) === true &&
                         result.statusCode === 200) {
                         let tokenAccessResult: any = JSON.parse(result.body);
 
@@ -214,6 +216,7 @@ class Authorization {
             tokenAccess: string | null,
             verifyKey: string | null
         ): Promise<string | null> {
+            let util: Util = new Util();
             let options: request.CoreOptions = {
                 method: 'GET',
                 headers: {
@@ -225,7 +228,7 @@ class Authorization {
             
             return new Promise((resolve, reject) => {
                 request('https://jwt.mahidol.ac.th/v1/publickeypem', options, (error: any, result: any) => {
-                    if (error === null &&
+                    if (util.doIsEmpty(error) === true &&
                         result.statusCode === 200)
                         resolve(result.body !== 'get package fail!' ? result.body : null);
                     else
@@ -234,8 +237,9 @@ class Authorization {
             });
         },
         doIsTokenExpired(tokenExpiration: null | undefined): boolean {
-            if (tokenExpiration !== undefined &&
-                tokenExpiration !== null) {
+            let util: Util = new Util();
+
+            if (util.doIsEmpty(tokenExpiration) === false) {
                 let timestamp: any = ticksToDate(tokenExpiration)
 
                 if (timestamp.getTime() < Date.now())
@@ -250,31 +254,34 @@ class Authorization {
             req: Schema.TypeRequest,
             clientData: Schema.Client
         ): Promise<Schema.Result> {
-            let token: any = ((req.headers.token !== undefined) && (req.headers.token.length !== 0) ? req.headers.token : null);
+            let util: Util = new Util();
+            let token: string | null = util.doGetString(req.headers.token);
             let CUIDs: Array<string> | null = null;
             let status: boolean = true;
             let statusCode: number = 200;
             let payload: any = null;
             let message: string = 'ok';
 
-            if (token !== null) {
+            if (util.doIsEmpty(token) === false) {
+                token = String(token);
                 CUIDs = token.trim().split('|');
 
-                if (CUIDs !== null &&
+                if (util.doIsEmpty(CUIDs) === false &&
                     CUIDs.length === 2) {
                     let tokenAccess: string = CUIDs[0];
                     let publicKey: string | null = await this.doGetPublicKey(req, tokenAccess, clientData.verifyKey);
-
-                    if (publicKey !== null) {
+                    
+                    if (util.doIsEmpty(publicKey) === false) {
                         try {
+                            publicKey = String(publicKey);
                             payload = jwt.verify(tokenAccess, publicKey, { algorithms: ['RS512'] });
 
-                            if (payload !== null) {
+                            if (util.doIsEmpty(payload) === false) {
                                 let jwtPayload: jwt.JwtPayload = payload;
 
-                                if (jwtPayload.SystemKey !== undefined &&
-                                    jwtPayload.SystemKey !== null &&
-                                    jwtPayload.Exp !== undefined) {
+                                if (util.doIsEmpty(jwtPayload.SystemKey) === false &&
+                                    util.doIsEmpty(jwtPayload.SystemKey) === false &&
+                                    util.doIsEmpty(jwtPayload.Exp) === false) {
                                     if (this.doIsTokenExpired(payload.Exp) === true) {
                                         status = false;
                                         statusCode = 401;
@@ -324,13 +331,16 @@ class Authorization {
             req: Schema.TypeRequest,
             clientData: Schema.Client
         ): Promise<Schema.Result> {
-            let authorization: string | undefined = req.headers.authorization;
+            let util = new Util();
+            let authorization: string | null = util.doGetString(req.headers.authorization);
             let clientID: string | null = null;
             let statusCode: number = 200;
             let payload: any = null;
             let message: string = 'ok';
 
-            if (authorization !== undefined) {
+            if (util.doIsEmpty(authorization) === false) {
+                authorization = String(authorization);
+
                 if (authorization.startsWith("Bearer ")) {
                     let token: string = authorization.substring("Bearer ".length).trim()
                     let tokenVerifiedResult: Schema.Result;
@@ -382,7 +392,7 @@ export class Util {
             status: result.status,
             statusCode: result.statusCode,
             data: result.data,
-            message: (result.message !== null ? result.message : (result.statusCode === 200 ? 'ok' : null))
+            message: (this.doIsEmpty(result.message) === false ? result.message : (result.statusCode === 200 ? 'ok' : null))
         };
     }
     
@@ -434,6 +444,7 @@ export class Util {
         route: string | null,
         rootValue: string
     ): Promise<Schema.Result> {
+        let util: Util = new Util();
         let query: {} | null = null;
         let options: request.CoreOptions = {
             method: "GET",
@@ -445,16 +456,16 @@ export class Util {
                 query: ('query {' + req.body + '}')
             };
 
-        if (query !== null)
+        if (util.doIsEmpty(query) === false)
             options.body = JSON.stringify(query);
 
-        if (url === null &&
-            route !== null)
+        if (util.doIsEmpty(url) === true &&
+            util.doIsEmpty(route) === false)
             url = ('http://' + process.env.HOST + ':' + process.env.PORT + '/' + route);
 
         return new Promise((resolve, reject) => {
-            request((url !== null ? url : ''), options, (error: any, result: any) => {
-                if (error === null &&
+            request((util.doIsEmpty(url) === false ? String(url) : ''), options, (error: any, result: any) => {
+                if (util.doIsEmpty(error) === true &&
                     result.statusCode === 200) {
                     let graphqlResult: any = JSON.parse(result.body);
                     let requestResult: Schema.Result = {
@@ -463,8 +474,8 @@ export class Util {
                         message: null
                     };
 
-                    if (graphqlResult.data !== undefined &&
-                        graphqlResult.data[rootValue] !== null)
+                    if (util.doIsEmpty(graphqlResult.data) === false &&
+                        util.doIsEmpty(graphqlResult.data[rootValue]) === false)
                         requestResult.data = graphqlResult.data[rootValue];
                     else {
                         try {
@@ -497,30 +508,46 @@ export class Util {
         });
     }
 
-    doIsStringEmpty(val: string | undefined | null): boolean {
+    doIsEmpty(val: string | {} | Array<any> | undefined | null): boolean {
         if (val !== undefined &&
-            val !== null)
-            return (val.length === 0)
-           
+            val !== null) {
+            let variableType: string = Object.prototype.toString.call(val); 
+
+            if (variableType === '[object String]')
+                return (val.toString().length === 0)
+
+            if (variableType === '[object Date]')
+                return false;
+
+            if (variableType === '[object Object]' &&
+                Array.isArray(val) === false)
+                return (Object.keys(val).length === 0)
+
+            if (Array.isArray(val) === true)
+                return (Object.assign(new Array<any>(), val).length === 0)
+
+            return false;
+        }
+
         return true;
     }
 
-    doGetString(val: string | undefined | null): string | null {
-        return (this.doIsStringEmpty(val) === false ? String(val) : null)
+    doGetString(val: string | Array<string> | undefined | null): string | null {
+        return (this.doIsEmpty(val) === false ? String(val) : null);
     }
 
     doGetStringNumber(
         val: any,
         fixed: number
     ): string | null {
-        return (this.doIsStringEmpty(val) === false ? String(val.toFixed(fixed)) : null);
+        return (this.doIsEmpty(val) === false ? String(val.toFixed(fixed)) : null);
     }
 
     doGetStringDate(
         val: any,
         locale: string
     ): string | null {
-        return (this.doIsStringEmpty(val) === false ? String(val.toLocaleDateString(locale)) : null);
+        return (this.doIsEmpty(val) === false ? String(val.toLocaleDateString(locale)) : null);
     }
 
     doGetIPAddress(req: Schema.TypeRequest): string {

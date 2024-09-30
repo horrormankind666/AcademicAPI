@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๐๖/๐๙/๒๕๖๗>
+Modify date : <๓๐/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -22,7 +22,7 @@ export namespace Schema {
         status?: boolean,
         datas?: any,
         data?: any,
-        message?: string | null
+        message?: string | {} | null
     }
 
     export interface Client {
@@ -580,6 +580,91 @@ export namespace Schema {
                 }
                 postcode?: string | null,
                 schoolLevel?: string | null
+            }
+        }
+
+        export namespace ActivityTranscript {
+            export interface Activity {
+                ID: string | null,
+                IDRefMUWalletForAT: string | null,
+                acaYear: string | null,
+                semester: string | null,
+                name: {
+                    th: string | null,
+                    en: string | null
+                }
+                startDate: string | null,
+                endDate: string | null,
+                hours: string | null,
+                place: string | null,
+                amountMax: string | null,
+                project: {
+                    ID: string | null,
+                    name: {
+                        th: string | null,
+                        en: string | null,
+                    },
+                    detail?: string | null,
+                    status?: {
+                        ID: string | null
+                    },
+                    application: {
+                        startDate: string | null,
+                        endDate: string | null
+                    },
+                    type: {
+                        name: {
+                            th: string | null
+                            en: string | null
+                        }
+                    },
+                    institute: {
+                        name: {
+                            th: string | null,
+                            en: string | null
+                        }
+                    },
+                    pictureFileName?: string | null,
+                    targetGroup?: {
+                        name: {
+                            th: string | null,
+                            en: string | null
+                        }
+                    },
+                    expression?: {
+                        studentCode: string | null,
+                        faculty: string | null,
+                        class: string | null
+                    },
+                    isExpression?: {
+                        studentCode: string | null,
+                        faculty: string | null,
+                        class: string | number
+                    }
+                },
+                registrationFee?: string | null,
+                indicator?: string | null,
+                character?: string | null,
+                countRegistered?: string | null,
+                countRegisteredAll?: string | null,
+                registrationStatusDetail?: string | null,
+                countStudentsRegistered?: string | null,
+                countStudentsJoin?: string | null,
+                datenowRegistrationStatus?: string | null,
+                student: {
+                    ID: string | null,
+                    code: string | null,
+                    class: string | null,
+                    faculty: {
+                        ID: string | null
+                    }
+                },
+                isEntrance?: string | null,
+                paidStatus?: string | null,
+                invoice?: {
+                    ID: string | null
+                },
+                cancelledStatus?: string | null
             }
         }
     }

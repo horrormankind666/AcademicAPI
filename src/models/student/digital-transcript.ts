@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๙/๐๕/๒๕๖๖>
-Modify date : <๐๙/๐๒/๒๕๖๗>
+Modify date : <๒๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -30,7 +30,7 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             footerResult.statusCode === 200) {
-            if (footerResult.datas.length !== 0) {
+            if (util.doIsEmpty(footerResult.datas) === false) {
                 let footerDatas: Array<any> = footerResult.datas;
                 let footerData: any = Object.assign({}, footerDatas[0]);
 
@@ -153,7 +153,7 @@ export class DigitalTranscriptModel {
         return {
             conn: conn,
             statusCode: footerResult.statusCode,
-            data: (footerResult.data !== undefined ? footerResult.data : null),
+            data: (util.doIsEmpty(footerResult.data) === false ? footerResult.data : null),
             message: footerResult.message
         };
     }
@@ -174,7 +174,7 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             additionalInformationResult.statusCode === 200) {
-            if (additionalInformationResult.datas.length !== 0) {
+            if (util.doIsEmpty(additionalInformationResult.datas) === false) {
                 let additionalInformationDatas: Array<any> = additionalInformationResult.datas;
                 let additionalInformationData: any = Object.assign({}, additionalInformationDatas[0]);
 
@@ -191,7 +191,7 @@ export class DigitalTranscriptModel {
         return {
             conn: conn,
             statusCode: additionalInformationResult.statusCode,
-            data: (additionalInformationResult.data !== undefined ? additionalInformationResult.data : null),
+            data: (util.doIsEmpty(additionalInformationResult.data) === false ? additionalInformationResult.data : null),
             message: additionalInformationResult.message
         };
     }
@@ -213,7 +213,7 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             gpaInfoResult.statusCode === 200) {
-            if (gpaInfoResult.datas.length !== 0) {
+            if (util.doIsEmpty(gpaInfoResult.datas) === false) {
                 let gpaInfoDatas: Array<any> = gpaInfoResult.datas;
                 let gpaInfoData: any = Object.assign({}, gpaInfoDatas[0]);
 
@@ -248,10 +248,12 @@ export class DigitalTranscriptModel {
             }
         }
 
+        util.db.mssql.doClose(conn);
+
         return {
             conn: conn,
             statusCode: gpaInfoResult.statusCode,
-            data: (gpaInfoResult.data !== undefined ? gpaInfoResult.data : null),
+            data: (util.doIsEmpty(gpaInfoResult.data) === false ? gpaInfoResult.data : null),
             message: gpaInfoResult.message
         };
     }
@@ -269,10 +271,10 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             gpaStatusResult.statusCode === 200) {
-            if (gpaStatusResult.datas.length !== 0) {
+            if (util.doIsEmpty(gpaStatusResult.datas) === false) {
                 let gpaStatusDatas: Array<any> = gpaStatusResult.datas;
 
-                gpaStatusResult.data = [];
+                gpaStatusResult.data = new Array<Schema.Student.DigitalTranscript.GPAStatus>;
 
                 gpaStatusDatas.forEach((gpaStatusData) => {
                     gpaStatusResult.data.push(<Schema.Student.DigitalTranscript.GPAStatus>{
@@ -299,10 +301,12 @@ export class DigitalTranscriptModel {
             }
         }
 
+        util.db.mssql.doClose(conn);
+
         return {
             conn: conn,
             statusCode: gpaStatusResult.statusCode,
-            data: (gpaStatusResult.data !== undefined ? gpaStatusResult.data : null),
+            data: (util.doIsEmpty(gpaStatusResult.data) === false ? gpaStatusResult.data : null),
             message: gpaStatusResult.message
         };
     }
@@ -325,10 +329,10 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             subjectRegistrationResult.statusCode === 200) {
-            if (subjectRegistrationResult.datas.length !== 0) {
+            if (util.doIsEmpty(subjectRegistrationResult.datas) === false) {
                 let subjectRegistrationDatas: Array<any> = subjectRegistrationResult.datas;
 
-                subjectRegistrationResult.data = [];
+                subjectRegistrationResult.data = new Array<Schema.Student.DigitalTranscript.SubjectRegistration>;
 
                 subjectRegistrationDatas.forEach((subjectRegistrationData) => {
                     subjectRegistrationResult.data.push(<Schema.Student.DigitalTranscript.SubjectRegistration>{
@@ -369,10 +373,12 @@ export class DigitalTranscriptModel {
             }
         }
 
+        util.db.mssql.doClose(conn);
+
         return {
             conn: conn,
             statusCode: subjectRegistrationResult.statusCode,
-            data: (subjectRegistrationResult.data !== undefined ? subjectRegistrationResult.data : null),
+            data: (util.doIsEmpty(subjectRegistrationResult.data) === false ? subjectRegistrationResult.data : null),
             message: subjectRegistrationResult.message
         };
     }
@@ -390,10 +396,10 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             subjectTransferResult.statusCode === 200) {
-            if (subjectTransferResult.datas.length !== 0) {
+            if (util.doIsEmpty(subjectTransferResult.datas) === false) {
                 let subjectTransferDatas: Array<any> = subjectTransferResult.datas;
 
-                subjectTransferResult.data = [];
+                subjectTransferResult.data = new Array<Schema.Student.DigitalTranscript.SubjectRegistration>;
 
                 subjectTransferDatas.forEach((subjectTransferData) => {
                     subjectTransferResult.data.push(<Schema.Student.DigitalTranscript.SubjectRegistration>{
@@ -434,10 +440,12 @@ export class DigitalTranscriptModel {
             }
         }
 
+        util.db.mssql.doClose(conn);
+
         return {
             conn: conn,
             statusCode: subjectTransferResult.statusCode,
-            data: (subjectTransferResult.data !== undefined ? subjectTransferResult.data : null),
+            data: (util.doIsEmpty(subjectTransferResult.data) === false ? subjectTransferResult.data : null),
             message: subjectTransferResult.message
         };
     }
@@ -453,7 +461,7 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             registrarResult.statusCode === 200) {
-            if (registrarResult.datas.length !== 0) {
+            if (util.doIsEmpty(registrarResult.datas) === false) {
                 let registrarDatas: Array<any> = registrarResult.datas;
                 let registrarData: any = Object.assign({}, registrarDatas[0]);
 
@@ -474,7 +482,7 @@ export class DigitalTranscriptModel {
         return {
             conn: conn,
             statusCode: registrarResult.statusCode,
-            data: (registrarResult.data !== undefined ? registrarResult.data : null),
+            data: (util.doIsEmpty(registrarResult.data) === false ? registrarResult.data : null),
             message: registrarResult.message
         };
     }
@@ -492,10 +500,10 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             semesterStudentResult.statusCode === 200) {
-            if (semesterStudentResult.datas.length !== 0) {
+            if (util.doIsEmpty(semesterStudentResult.datas) === false) {
                 let semesterStudentDatas: Array<any> = semesterStudentResult.datas;
 
-                semesterStudentResult.data = [];
+                semesterStudentResult.data = new Array<Schema.Student.DigitalTranscript.SemesterStudent>;
 
                 semesterStudentDatas.forEach((semesterStudentData) => {
                     semesterStudentResult.data.push(<Schema.Student.DigitalTranscript.SemesterStudent>{
@@ -510,10 +518,12 @@ export class DigitalTranscriptModel {
             }
         }
 
+        util.db.mssql.doClose(conn);
+        
         return {
             conn: conn,
             statusCode: semesterStudentResult.statusCode,
-            data: (semesterStudentResult.data !== undefined ? semesterStudentResult.data : null),
+            data: (util.doIsEmpty(semesterStudentResult.data) === false ? semesterStudentResult.data : null),
             message: semesterStudentResult.message
         };
     }
@@ -534,7 +544,7 @@ export class DigitalTranscriptModel {
 
         if (conn !== null &&
             profileStudentResult.statusCode === 200) {
-            if (profileStudentResult.datas.length !== 0) {
+            if (util.doIsEmpty(profileStudentResult.datas) === false) {
                 let profileStudentDatas: Array<any> = profileStudentResult.datas;
                 let profileStudentData: any = Object.assign({}, profileStudentDatas[0]);
 
@@ -625,7 +635,7 @@ export class DigitalTranscriptModel {
         return {
             conn: conn,
             statusCode: profileStudentResult.statusCode,
-            data: (profileStudentResult.data !== undefined ? profileStudentResult.data : null),
+            data: (util.doIsEmpty(profileStudentResult.data) === false ? profileStudentResult.data : null),
             message: profileStudentResult.message
         };
     }

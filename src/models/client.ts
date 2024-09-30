@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๐๖/๐๙/๒๕๖๗>
+Modify date : <๒๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -35,7 +35,7 @@ export class ClientModel {
         
         if (conn !== null &&
             clientResult.statusCode === 200) {
-            if (clientResult.datas.length !== 0) {
+            if (util.doIsArrayEmpty(clientResult.datas) === false) {
                 let clientDatas: Array<Schema.Client> = clientResult.datas;
                 let clientData: Schema.Client = Object.assign({}, clientDatas[0]);
                 
@@ -61,7 +61,7 @@ export class ClientModel {
         
         if (conn !== null &&
             clientResult.statusCode === 200) {
-            if (clientResult.datas.length !== 0) {
+            if (util.doIsEmpty(clientResult.datas) === false) {
                 let clientDatas: Array<Schema.Client> = clientResult.datas;
                 let clientData: Schema.Client = Object.assign({}, clientDatas[0]);
                 
@@ -80,7 +80,7 @@ export class ClientModel {
         return {
             conn: conn,
             statusCode: clientResult.statusCode,
-            data: (clientResult.data !== undefined ? clientResult.data : null),
+            data: (util.doIsEmpty(clientResult.data) === false ? clientResult.data : null),
             message: clientResult.message
         };
     }

@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๐๙/๐๙/๒๕๖๗>
+Modify date : <๒๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -42,13 +42,15 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     let urls: Array<string> = (req.url.split('/'));
-    let url: string | null = (urls.length !== 0 ? (urls[1].length !== 0 ? urls[1] : null) : null);
+    let url: string | null = (util.doIsEmpty(urls) === false ? util.doGetString(urls[1]) : null);
     let client: any = {
-        ID: ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null),
-        secret: ((req.headers.clientsecret !== undefined) && (req.headers.clientsecret.length !== 0) ? req.headers.clientsecret : null)
+        ID: util.doGetString(req.headers.clientid),
+        secret: util.doGetString(req.headers.clientsecret)
     };
 
-    if (url !== null) {
+    if (util.doIsEmpty(url) === false) {
+        url = String(url);
+
         if (['Student'].includes(url) === true) {
             /*
             await requestModel.doSet(req, client.ID);
@@ -151,34 +153,37 @@ app.use(async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
 
             await requestModel.doSet(req, client.ID);
 
-            if (client.ID !== null &&
-                client.secret !== null) {
+            if (util.doIsEmpty(client.ID) === false &&
+                util.doIsEmpty(client.secret) === false) {
                 let CUIDs: Array<string> | null = util.doParseCUID(client.secret);
                 let clientID: string | null = null;
                 let systemKey: string | null = null;
 
-                if (CUIDs !== null &&
-                    CUIDs.length === 2) {
-                    clientID = (CUIDs[0].length !== 0 ? CUIDs[0] : null);
-                    systemKey = (CUIDs[1].length !== 0 ? CUIDs[1] : null);
+                if (util.doIsEmpty(CUIDs) === false) {
+                    CUIDs = Object.assign(new Array<string>(), CUIDs);
+
+                    if (CUIDs.length === 2) {
+                        clientID = util.doGetString(CUIDs[0]);
+                        systemKey = util.doGetString(CUIDs[1]);
+                    }
                 }
 
                 if (clientID === client.ID &&
-                    systemKey !== null) {
+                    util.doIsEmpty(systemKey) === false) {
                     let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
 
                     if (clientResult.conn !== null &&
                         clientResult.statusCode === 200) {
-                        if (clientResult.data !== null) {
+                        if (util.doIsEmpty(clientResult.data) === false) {
                             let clientData: Schema.Client = Object.assign({}, clientResult.data);
 
                             if (clientID === clientData.ID &&
-                                client.ID == clientData.ID &&
+                                client.ID === clientData.ID &&
                                 systemKey === clientData.systemKey) {
                                 let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req, clientData);
 
                                 if (tokenResult.statusCode === 200 &&
-                                    tokenResult.data.payload !== null) {
+                                    util.doIsEmpty(tokenResult.data.payload) === false) {
                                     req.payload = tokenResult.data.payload;
 
                                     if (tokenResult.data.clientID === client.ID &&
@@ -216,7 +221,7 @@ app.use(async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
                         res.send(util.doAPIMessage({
                             statusCode: clientResult.statusCode,
                             data: clientResult.data,
-                            message: (clientResult.message !== undefined ? clientResult.message : null)
+                            message: (util.doIsEmpty(clientResult.message) === false ? clientResult.message : null)
                         }));
                 }
                 else
@@ -236,7 +241,7 @@ app.use(async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
         }
         else {
             if (url === 'Token') {
-                let clientID: any = ((req.headers.clientid !== undefined) && (req.headers.clientid.length !== 0) ? req.headers.clientid : null);
+                let clientID: string | null = util.doGetString(req.headers.clientid);
 
                 await requestModel.doSet(req, clientID);
             }

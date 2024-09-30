@@ -67,7 +67,7 @@ router.get('/(:section)/Get/', async(req: Schema.TypeRequest, res: Response, nex
             break;
         case 'ProfileStudentEN':
             digitalTranscriptResult = await student.digitalTranscriptModel.doGetProfileStudent('En', studentCode);
-            break;            
+            break;
         default:
             digitalTranscriptResult = {
                 statusCode: 400,

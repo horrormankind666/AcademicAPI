@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๒/๐๒/๒๕๖๖>
-Modify date : <๐๘/๐๕/๒๕๖๖>
+Modify date : <๒๙/๐๙/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -52,7 +52,7 @@ export class RequestModel {
             '       replace(\'' + (typeof req.body === "object" ? JSON.stringify(req.body) : req.body) + '\', \' \', \'\'), ' +
             '       \'' + req.headers['user-agent'] + '\', ' +
             '       getdate(), ' +
-            '       ' + (clientID !== null ? ('\'' + clientID + '\'') : null) + ', ' +
+            '       ' + (util.doIsEmpty(clientID) === false ? ('\'' + clientID + '\'') : null) + ', ' +
             '       \'' + util.doGetIPAddress(req) + '\''
         );
         
