@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๙/๐๕/๒๕๖๖>
-Modify date : <๒๙/๐๙/๒๕๖๗>
+Modify date : <๐๔/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -31,8 +31,8 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             footerResult.statusCode === 200) {
             if (util.doIsEmpty(footerResult.datas) === false) {
-                let footerDatas: Array<any> = footerResult.datas;
-                let footerData: any = Object.assign({}, footerDatas[0]);
+                let footerDatas: Array<any> = { ...footerResult.datas };
+                let footerData: any = { ...footerDatas[0] };
 
                 footerResult.data = <Schema.Student.DigitalTranscript.Footer>{
                     studentCode: util.doGetString(footerData.studentCode),
@@ -175,8 +175,8 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             additionalInformationResult.statusCode === 200) {
             if (util.doIsEmpty(additionalInformationResult.datas) === false) {
-                let additionalInformationDatas: Array<any> = additionalInformationResult.datas;
-                let additionalInformationData: any = Object.assign({}, additionalInformationDatas[0]);
+                let additionalInformationDatas: Array<any> = { ...additionalInformationResult.datas };
+                let additionalInformationData: any = { ...additionalInformationDatas[0] };
 
                 additionalInformationResult.data = <Schema.Student.DigitalTranscript.AdditionalInformation>{
                     studentCode: util.doGetString(additionalInformationData.studentCode),
@@ -214,8 +214,8 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             gpaInfoResult.statusCode === 200) {
             if (util.doIsEmpty(gpaInfoResult.datas) === false) {
-                let gpaInfoDatas: Array<any> = gpaInfoResult.datas;
-                let gpaInfoData: any = Object.assign({}, gpaInfoDatas[0]);
+                let gpaInfoDatas: Array<any> = { ...gpaInfoResult.datas };
+                let gpaInfoData: any = { ...gpaInfoDatas[0] };
 
                 gpaInfoResult.data = <Schema.Student.DigitalTranscript.GPAInfo>{
                     studentCode: util.doGetString(gpaInfoData.studentCode),
@@ -272,7 +272,7 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             gpaStatusResult.statusCode === 200) {
             if (util.doIsEmpty(gpaStatusResult.datas) === false) {
-                let gpaStatusDatas: Array<any> = gpaStatusResult.datas;
+                let gpaStatusDatas: Array<any> = { ...gpaStatusResult.datas };
 
                 gpaStatusResult.data = new Array<Schema.Student.DigitalTranscript.GPAStatus>;
 
@@ -330,7 +330,7 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             subjectRegistrationResult.statusCode === 200) {
             if (util.doIsEmpty(subjectRegistrationResult.datas) === false) {
-                let subjectRegistrationDatas: Array<any> = subjectRegistrationResult.datas;
+                let subjectRegistrationDatas: Array<any> = { ...subjectRegistrationResult.datas };
 
                 subjectRegistrationResult.data = new Array<Schema.Student.DigitalTranscript.SubjectRegistration>;
 
@@ -397,7 +397,7 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             subjectTransferResult.statusCode === 200) {
             if (util.doIsEmpty(subjectTransferResult.datas) === false) {
-                let subjectTransferDatas: Array<any> = subjectTransferResult.datas;
+                let subjectTransferDatas: Array<any> = { ...subjectTransferResult.datas };
 
                 subjectTransferResult.data = new Array<Schema.Student.DigitalTranscript.SubjectRegistration>;
 
@@ -462,8 +462,8 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             registrarResult.statusCode === 200) {
             if (util.doIsEmpty(registrarResult.datas) === false) {
-                let registrarDatas: Array<any> = registrarResult.datas;
-                let registrarData: any = Object.assign({}, registrarDatas[0]);
+                let registrarDatas: Array<any> = { ...registrarResult.datas };
+                let registrarData: any = { ...registrarDatas[0] };
 
                 registrarResult.data = <Schema.Student.DigitalTranscript.Registrar>{
                     ID: util.doGetString(registrarData.ID),
@@ -501,7 +501,7 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             semesterStudentResult.statusCode === 200) {
             if (util.doIsEmpty(semesterStudentResult.datas) === false) {
-                let semesterStudentDatas: Array<any> = semesterStudentResult.datas;
+                let semesterStudentDatas: Array<any> = { ...semesterStudentResult.datas };
 
                 semesterStudentResult.data = new Array<Schema.Student.DigitalTranscript.SemesterStudent>;
 
@@ -545,8 +545,8 @@ export class DigitalTranscriptModel {
         if (conn !== null &&
             profileStudentResult.statusCode === 200) {
             if (util.doIsEmpty(profileStudentResult.datas) === false) {
-                let profileStudentDatas: Array<any> = profileStudentResult.datas;
-                let profileStudentData: any = Object.assign({}, profileStudentDatas[0]);
+                let profileStudentDatas: Array<any> = { ...profileStudentResult.datas };
+                let profileStudentData: any = { ...profileStudentDatas[0] };
 
                 profileStudentResult.data = <Schema.Student.DigitalTranscript.ProfileStudent>{
                     dataSubjectID: {

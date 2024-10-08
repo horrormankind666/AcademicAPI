@@ -22,7 +22,7 @@ dotenv.config();
 
 router.get('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     let profileResult: Schema.Result = await util.doRequestGraphql(req, null, 'Graphql/Student/Profile/Get', 'profile');
-
+    
     res.send(util.doAPIMessage(profileResult));
 });
 

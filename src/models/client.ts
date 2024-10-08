@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๒๙/๐๙/๒๕๖๗>
+Modify date : <๐๔/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -62,15 +62,16 @@ export class ClientModel {
         if (conn !== null &&
             clientResult.statusCode === 200) {
             if (util.doIsEmpty(clientResult.datas) === false) {
-                let clientDatas: Array<Schema.Client> = clientResult.datas;
-                let clientData: Schema.Client = Object.assign({}, clientDatas[0]);
+                let clientDatas: Array<Schema.Client> = { ...clientResult.datas };
+                let clientData: Schema.Client = { ...clientDatas[0] };
                 
                 clientResult.data = <Schema.Client>{
                     ID: clientData.ID,
                     secret: clientData.secret,
                     systemKey: clientData.systemKey,
                     apiKey: clientData.apiKey,
-                    verifyKey: clientData.verifyKey
+                    verifyKey: clientData.verifyKey,
+                    forSystem: clientData.forSystem
                 };
             }
         }

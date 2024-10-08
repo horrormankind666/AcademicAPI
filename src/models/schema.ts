@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๓/๐๑/๒๕๖๖>
-Modify date : <๓๐/๐๙/๒๕๖๗>
+Modify date : <๐๕/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -18,11 +18,24 @@ export namespace Schema {
 
     export interface Result {
         conn?: any,
-        statusCode: number,
-        status?: boolean,
+        statusCode?: number | null,
+        code?: number | null,
+        status?: boolean | null,
+        success?: boolean | null,
         datas?: any,
         data?: any,
         message?: string | {} | null
+    }
+
+    export namespace URLConfig {
+        export interface Dic {
+            [url: string]: Result
+        }
+
+        export interface Result {
+            isCheckAuthorized: boolean,
+            apiResultKeys?: Array<string>
+        }
     }
 
     export interface Client {
@@ -30,7 +43,8 @@ export namespace Schema {
         secret: string,
         systemKey: string,
         apiKey: string,
-        verifyKey: string
+        verifyKey: string,
+        forSystem: string
     }
 
     export namespace Student {
@@ -587,30 +601,33 @@ export namespace Schema {
             export interface Activity {
                 ID: string | null,
                 IDRefMUWalletForAT: string | null,
-                acaYear: string | null,
-                semester: string | null,
                 name: {
                     th: string | null,
                     en: string | null
                 }
+                acaYear: string | null,
+                semester: string | null,
                 startDate: string | null,
                 endDate: string | null,
                 hours: string | null,
                 place: string | null,
                 amountMax: string | null,
+                registrationFee: string | null,
                 project: {
                     ID: string | null,
                     name: {
                         th: string | null,
                         en: string | null,
                     },
-                    detail?: string | null,
-                    status?: {
-                        ID: string | null
+                    detail: string | null,
+                    institute: {
+                        name: {
+                            th: string | null,
+                            en: string | null
+                        }
                     },
-                    application: {
-                        startDate: string | null,
-                        endDate: string | null
+                    status: {
+                        ID: string | null
                     },
                     type: {
                         name: {
@@ -618,39 +635,28 @@ export namespace Schema {
                             en: string | null
                         }
                     },
-                    institute: {
+                    targetGroup: {
                         name: {
                             th: string | null,
                             en: string | null
                         }
                     },
-                    pictureFileName?: string | null,
-                    targetGroup?: {
-                        name: {
-                            th: string | null,
-                            en: string | null
-                        }
-                    },
-                    expression?: {
-                        studentCode: string | null,
-                        faculty: string | null,
-                        class: string | null
-                    },
-                    isExpression?: {
-                        studentCode: string | null,
-                        faculty: string | null,
-                        class: string | number
-                    }
+                    startDate: string | null,
+                    endDate: string | null,
                 },
-                registrationFee?: string | null,
-                indicator?: string | null,
-                character?: string | null,
-                countRegistered?: string | null,
-                countRegisteredAll?: string | null,
-                registrationStatusDetail?: string | null,
-                countStudentsRegistered?: string | null,
-                countStudentsJoin?: string | null,
-                datenowRegistrationStatus?: string | null,
+                countRegistered: string | null,
+                countStudentsRegistered: string | null,
+                countStudentsJoined: string | null,
+                isRegisterByDateNow: string | null,
+                isExpression: {
+                    studentCode: string | null,
+                    faculty: string | null,
+                    class: string | null
+                }
+                invoice: {
+                    ID: string | null,
+                    paidStatus: string | null
+                },
                 student: {
                     ID: string | null,
                     code: string | null,
@@ -659,12 +665,7 @@ export namespace Schema {
                         ID: string | null
                     }
                 },
-                isEntrance?: string | null,
-                paidStatus?: string | null,
-                invoice?: {
-                    ID: string | null
-                },
-                cancelledStatus?: string | null
+                registeredDate: string | null
             }
         }
     }

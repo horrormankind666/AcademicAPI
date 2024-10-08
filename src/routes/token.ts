@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๘/๐๑/๒๕๖๖>
-Modify date : <๒๙/๐๙/๒๕๖๗>
+Modify date : <๐๒/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -42,7 +42,7 @@ router.post('/Get', async(req: Schema.TypeRequest, res: Response, next: NextFunc
             if (clientResult.conn !== null &&
                 clientResult.statusCode === 200) {
                 if (util.doIsEmpty(clientResult.data) === false) {
-                    let clientData: Schema.Client = Object.assign({}, clientResult.data);
+                    let clientData: Schema.Client = { ...clientResult.data };
                     let tokenAccessResult: Schema.Result = await util.authorization.jwtClient.doGetTokenAccess(req, clientData.apiKey);
                     
                     if (tokenAccessResult.status === true &&
@@ -95,7 +95,7 @@ router.post('/Verify', async(req: Schema.TypeRequest, res: Response, next: NextF
         secret: util.doGetString(req.headers.clientsecret)
     };
     let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
-    let clientData: Schema.Client = Object.assign({}, clientResult.data);
+    let clientData: Schema.Client = { ...clientResult.data };
     let tokenVerifiedResult: Schema.Result = await util.authorization.jwtClient.doTokenVerify(req, clientData);
 
     res.send(util.doAPIMessage(tokenVerifiedResult));

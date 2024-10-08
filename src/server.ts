@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๒๙/๐๙/๒๕๖๗>
+Modify date : <๐๒/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -25,6 +25,7 @@ import studentDigitalTranscriptRoute from './routes/student/digital-transcript';
 import studentActivityTranscriptRoute from './routes/student/activity-transcript';
 
 import studentProfileGraphql from './graphql/student/profile';
+import { map } from 'mssql';
 
 const app = express();
 const router: Router = express.Router();
@@ -47,207 +48,152 @@ app.use(async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
         ID: util.doGetString(req.headers.clientid),
         secret: util.doGetString(req.headers.clientsecret)
     };
-
+    
     if (util.doIsEmpty(url) === false) {
         url = String(url);
 
-        if (['Student'].includes(url) === true) {
-            /*
-            await requestModel.doSet(req, client.ID);
-            
-            if (client.ID !== null &&
-                client.secret !== null) {
-                let CUIDs: Array<string> | null = util.doParseCUID(client.secret);
-                let clientID: string | null = null;
-                let systemKey: string | null = null;
+        let urlConfigResult: Schema.URLConfig.Result = Object.assign(new Object, util.urlConfig[url.toLowerCase()]);
+        
+        if (util.doIsEmpty(urlConfigResult) === false) {
+            if (urlConfigResult.isCheckAuthorized === true) {
+                await requestModel.doSet(req, client.ID);
 
-                if (CUIDs !== null &&
-                    CUIDs.length === 2) {
-                    clientID = (CUIDs[0].length !== 0 ? CUIDs[0] : null);
-                    systemKey = (CUIDs[1].length !== 0 ? CUIDs[1] : null);
-                }
+                if (util.doIsEmpty(client.ID) === false &&
+                    util.doIsEmpty(client.secret) === false) {
+                    let CUIDs: Array<string> | null = util.doParseCUID(client.secret);
+                    let clientID: string | null = null;
+                    let systemKey: string | null = null;
 
-                if (clientID === client.ID) {
-                    let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
+                    if (util.doIsEmpty(CUIDs) === false) {
+                        CUIDs = Object.assign(new Array<string>(), CUIDs);
 
-                    if (clientResult.conn !== null &&
-                        clientResult.statusCode === 200) {
-                        if (clientResult.data !== null) {
-                            let clientData: Schema.Client = Object.assign({}, clientResult.data);
-
-                            if (clientID === clientData.ID &&
-                                client.ID == clientData.ID &&
-                                systemKey === clientData.systemKey &&
-                                systemKey === process.env.SYSTEM_KEY)
-                                next();
-                            else
-                                res.send(util.doAPIMessage({
-                                    statusCode: 401,
-                                    data: null,
-                                    message: 'unauthorized'
-                                }));
+                        if (CUIDs.length === 2) {
+                            clientID = util.doGetString(CUIDs[0]);
+                            systemKey = util.doGetString(CUIDs[1]);
                         }
-                        else
-                            res.send(util.doAPIMessage({
-                                statusCode: 401,
-                                data: null,
-                                message: 'unauthorized'
-                            }));
                     }
-                    else
-                        res.send(util.doAPIMessage({
-                            statusCode: clientResult.statusCode,
-                            data: clientResult.data,
-                            message: (clientResult.message !== undefined ? clientResult.message : null)
-                        }));
-                }
-                else
-                    res.send(util.doAPIMessage({
-                        statusCode: 401,
-                        data: null,
-                        message: 'unauthorized'
-                    }));
 
-            }
-            else
-                res.send(util.doAPIMessage({
-                    statusCode: 401,
-                    data: null,
-                    message: 'unauthorized'
-                }));
-            */
+                    if (clientID === client.ID &&
+                        util.doIsEmpty(systemKey) === false) {
+                        let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
+                        
+                        if (clientResult.conn !== null &&
+                            clientResult.statusCode === 200) {
+                            if (util.doIsEmpty(clientResult.data) === false) {
+                                let clientData: Schema.Client = clientResult.data;
 
-            /*
-            if (clientID === client.ID &&
-                systemKey === process.env.SYSTEM_KEY) {
-                let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req);
-                
-                if (tokenResult.statusCode === 200 &&
-                    tokenResult.data.payload !== null) {
-                    req.payload = tokenResult.data.payload;
+                                if (clientID === clientData.ID &&
+                                    client.ID === clientData.ID &&
+                                    systemKey === clientData.systemKey) {
+                                    let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req, clientData);
+                                    
+                                    if (tokenResult.statusCode === 200 &&
+                                        util.doIsEmpty(tokenResult.data.payload) === false) {
+                                        req.payload = tokenResult.data.payload;
 
-                    if (tokenResult.data.clientID === client.ID &&
-                        req.payload.SystemKey === process.env.SYSTEM_KEY)
-                        next();
-                    else
-                        res.send(util.doAPIMessage({
-                            statusCode: 401,
-                            data: null,
-                            message: 'unauthorized'
-                        }));
-                }
-                else
-                    res.send(util.doAPIMessage({
-                        statusCode: tokenResult.statusCode,
-                        data: null,
-                        message: tokenResult.message
-                    }));
-            }
-            else
-                res.send(util.doAPIMessage({
-                    statusCode: 401,
-                    data: null,
-                    message: 'unauthorized'
-                }));
-            */
-
-            await requestModel.doSet(req, client.ID);
-
-            if (util.doIsEmpty(client.ID) === false &&
-                util.doIsEmpty(client.secret) === false) {
-                let CUIDs: Array<string> | null = util.doParseCUID(client.secret);
-                let clientID: string | null = null;
-                let systemKey: string | null = null;
-
-                if (util.doIsEmpty(CUIDs) === false) {
-                    CUIDs = Object.assign(new Array<string>(), CUIDs);
-
-                    if (CUIDs.length === 2) {
-                        clientID = util.doGetString(CUIDs[0]);
-                        systemKey = util.doGetString(CUIDs[1]);
-                    }
-                }
-
-                if (clientID === client.ID &&
-                    util.doIsEmpty(systemKey) === false) {
-                    let clientResult: Schema.Result = await clientModel.doGet(client.ID, client.secret);
-
-                    if (clientResult.conn !== null &&
-                        clientResult.statusCode === 200) {
-                        if (util.doIsEmpty(clientResult.data) === false) {
-                            let clientData: Schema.Client = Object.assign({}, clientResult.data);
-
-                            if (clientID === clientData.ID &&
-                                client.ID === clientData.ID &&
-                                systemKey === clientData.systemKey) {
-                                let tokenResult: Schema.Result = await util.authorization.jwtClient.doTokenInfo(req, clientData);
-
-                                if (tokenResult.statusCode === 200 &&
-                                    util.doIsEmpty(tokenResult.data.payload) === false) {
-                                    req.payload = tokenResult.data.payload;
-
-                                    if (tokenResult.data.clientID === client.ID &&
-                                        req.payload.SystemKey === clientData.systemKey)
-                                        next();
+                                        if (tokenResult.data.clientID === client.ID &&
+                                            req.payload.SystemKey === clientData.systemKey)
+                                            next();
+                                        else
+                                            res.send(util.doAPIMessage(
+                                                util.doSetAPIResult({
+                                                    statusCode: 401,
+                                                    code: 401,
+                                                    success: false,
+                                                    data: null,
+                                                    message: 'unauthorized'
+                                                },
+                                                urlConfigResult.apiResultKeys)
+                                            ));
+                                    }
                                     else
-                                        res.send(util.doAPIMessage({
-                                            statusCode: 401,
-                                            data: null,
-                                            message: 'unauthorized'
-                                        }));
+                                        res.send(util.doAPIMessage(
+                                            util.doSetAPIResult({
+                                                statusCode: tokenResult.statusCode,
+                                                code: tokenResult.statusCode,
+                                                success: false,
+                                                data: null,
+                                                message: tokenResult.message
+                                            },
+                                            urlConfigResult.apiResultKeys)
+                                        ));
                                 }
                                 else
-                                    res.send(util.doAPIMessage({
-                                        statusCode: tokenResult.statusCode,
-                                        data: null,
-                                        message: tokenResult.message
-                                    }));
+                                    res.send(util.doAPIMessage(
+                                        util.doSetAPIResult({
+                                            statusCode: 401,
+                                            code: 401,
+                                            success: false,
+                                            data: null,
+                                            message: 'unauthorized'
+                                        },
+                                        urlConfigResult.apiResultKeys)
+                                    ));
                             }
                             else
-                                res.send(util.doAPIMessage({
-                                    statusCode: 401,
-                                    data: null,
-                                    message: 'unauthorized'
-                                }));
+                                res.send(util.doAPIMessage(
+                                    util.doSetAPIResult({
+                                        statusCode: 401,
+                                        code: 401,
+                                        success: false,
+                                        data: null,
+                                        message: 'unauthorized'
+                                    },
+                                    urlConfigResult.apiResultKeys)
+                                ));
                         }
                         else
-                            res.send(util.doAPIMessage({
-                                statusCode: 401,
-                                data: null,
-                                message: 'unauthorized'
-                            }));
+                            res.send(util.doAPIMessage(
+                                util.doSetAPIResult({
+                                    statusCode: clientResult.statusCode,
+                                    code: clientResult.statusCode,
+                                    success: false,
+                                    data: clientResult.data,
+                                    message: (util.doIsEmpty(clientResult.message) === false ? clientResult.message : null)
+                                },
+                                urlConfigResult.apiResultKeys)
+                            ));
                     }
                     else
-                        res.send(util.doAPIMessage({
-                            statusCode: clientResult.statusCode,
-                            data: clientResult.data,
-                            message: (util.doIsEmpty(clientResult.message) === false ? clientResult.message : null)
-                        }));
+                        res.send(util.doAPIMessage(
+                            util.doSetAPIResult({
+                                statusCode: 401,
+                                code: 401,
+                                success: false,
+                                data: null,
+                                message: 'unauthorized'
+                            },
+                            urlConfigResult.apiResultKeys)
+                        ));
                 }
                 else
-                    res.send(util.doAPIMessage({
-                        statusCode: 401,
-                        data: null,
-                        message: 'unauthorized'
-                    }));
-
+                    res.send(util.doAPIMessage(
+                        util.doSetAPIResult({
+                            statusCode: 401,
+                            code: 401,
+                            success: false,
+                            data: null,
+                            message: 'unauthorized'
+                        },
+                        urlConfigResult.apiResultKeys)
+                    ));
             }
-            else
-                res.send(util.doAPIMessage({
-                    statusCode: 401,
-                    data: null,
-                    message: 'unauthorized'
-                }));
-        }
-        else {
-            if (url === 'Token') {
-                let clientID: string | null = util.doGetString(req.headers.clientid);
+            else {
+                if (url === 'Token') {
+                    let clientID: string | null = util.doGetString(req.headers.clientid);
 
-                await requestModel.doSet(req, clientID);
+                    await requestModel.doSet(req, clientID);
+                }
+
+                next();
             }
-
-            next();
         }
+        else 
+            res.send(util.doAPIMessage({
+                statusCode: 400,
+                data: null,
+                message: 'bad request'
+            }));
     }
     else
         next();
@@ -274,7 +220,7 @@ app.get('/ClientSecret/Get/(:clientID)/(:systemKey)', (req: Schema.TypeRequest, 
 router.use('/Token', tokenRoute);
 router.use('/Student/Profile', studentProfileRoute);
 router.use('/Student/DigitalTranscript', studentDigitalTranscriptRoute);
-router.use('/Student/ActivityTranscript', studentActivityTranscriptRoute);
+router.use('/activities', studentActivityTranscriptRoute);
 router.use('/Graphql/Student/Profile', studentProfileGraphql);
 
 app.listen(process.env.PORT, () => {

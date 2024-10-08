@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๖/๐๑/๒๕๖๖>
-Modify date : <๒๙/๐๙/๒๕๖๗>
+Modify date : <๐๒/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -59,6 +59,7 @@ class DB {
                     return {
                         conn: conn,
                         statusCode: 200,
+                        code: 200,
                         datas: rows,
                         message: 'ok'
                     };
@@ -280,7 +281,6 @@ class Authorization {
                                 let jwtPayload: jwt.JwtPayload = payload;
 
                                 if (util.doIsEmpty(jwtPayload.SystemKey) === false &&
-                                    util.doIsEmpty(jwtPayload.SystemKey) === false &&
                                     util.doIsEmpty(jwtPayload.Exp) === false) {
                                     if (this.doIsTokenExpired(payload.Exp) === true) {
                                         status = false;
@@ -334,7 +334,7 @@ class Authorization {
             let util = new Util();
             let authorization: string | null = util.doGetString(req.headers.authorization);
             let clientID: string | null = null;
-            let statusCode: number = 200;
+            let statusCode: number | null | undefined = 200;
             let payload: any = null;
             let message: string = 'ok';
 
@@ -386,16 +386,50 @@ class Authorization {
 export class Util {
     db: DB = new DB();
     authorization: Authorization = new Authorization();
+    urlConfig: Schema.URLConfig.Dic = {
+        token: {
+            isCheckAuthorized: false
+        },
+        student: {
+            isCheckAuthorized: true,
+            apiResultKeys: ['statusCode', 'data', 'message']
+        },
+        graphql: {
+            isCheckAuthorized: false
+        },
+        activities: {
+            isCheckAuthorized: true,
+            apiResultKeys: ['success', 'message', 'code']
+        }
+    };
+
+    doSetAPIResult(
+        apiResult: any,
+        apiResultKeys?: Array<string>,
+    ): Schema.Result {
+        if (this.doIsEmpty(apiResultKeys) === false) {
+            let keys: Array<string> = Object.assign([], apiResultKeys);
+
+            Object.entries(apiResult).map(([key, value]) => {
+                if (keys.filter((keymap: string) => keymap === key).length === 0)
+                    delete apiResult[key];
+            });
+        }
+
+        return <Schema.Result>apiResult;
+    }
 
     doAPIMessage(result: Schema.Result): Schema.Result {
         return {
             status: result.status,
             statusCode: result.statusCode,
             data: result.data,
-            message: (this.doIsEmpty(result.message) === false ? result.message : (result.statusCode === 200 ? 'ok' : null))
+            success: result.success,
+            message: (this.doIsEmpty(result.message) === false ? result.message : (result.statusCode === 200 ? 'ok' : null)),
+            code: result.code
         };
     }
-    
+
     doGenerateRandAlphaNumStr(len: number = 10): string {
         let chars: string = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
         let result: string = '';

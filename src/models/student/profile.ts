@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๖/๐๑/๒๕๖๖>
-Modify date : <๒๙/๐๙/๒๕๖๗>
+Modify date : <๐๔/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -47,8 +47,8 @@ export class ProfileModel {
                 
                 if (profileResult.statusCode === 200) {
                     if (util.doIsEmpty(profileResult.datas) === false) {
-                        let profileDatas: Array<any> = profileResult.datas;
-                        let profileData: any = Object.assign({}, profileDatas[0]);
+                        let profileDatas: Array<any> = { ...profileResult.datas };
+                        let profileData: any = { ...profileDatas[0] };
 
                         profileResult.data = <Schema.Student.Profile> {
                             studentCode: profileData.studentCode,
