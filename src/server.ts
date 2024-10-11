@@ -25,7 +25,6 @@ import studentDigitalTranscriptRoute from './routes/student/digital-transcript';
 import studentActivityTranscriptRoute from './routes/student/activity-transcript';
 
 import studentProfileGraphql from './graphql/student/profile';
-import { map } from 'mssql';
 
 const app = express();
 const router: Router = express.Router();

@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๒๖/๐๑/๒๕๖๖>
-Modify date : <๐๔/๑๐/๒๕๖๗>
+Modify date : <๑๑/๑๐/๒๕๖๗>
 Description : <>
 =============================================
 */
@@ -20,19 +20,20 @@ export class ProfileModel {
     async doGet(studentCode: string | undefined): Promise<Schema.Result> {
         let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
         let connRequest: mssql.Request | null = null;
-        let query: string = (
-            'select personId ' +
-            'from   stdStudent ' +
-            'where	(studentCode = \'' + studentCode + '\')'
-        );
-        let personIDResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, null, 'query', query);
+
+        if (conn !== null) {
+            connRequest = conn.request();
+            connRequest.input('studentCode', studentCode);
+        }
+
+        let personIDResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', 'sp_stdStudentInfoByCode');
         let personID: string | null = null;
         let profileResult: Schema.Result
         
         if (conn !== null &&
             personIDResult.statusCode === 200) {
             if (util.doIsEmpty(personIDResult.datas) === false)
-                personID = personIDResult.datas[0].personId;
+                personID = personIDResult.datas[0].id;
             
             if (util.doIsEmpty(personID) === false) {
                 let studentCodeTable: mssql.Table = new mssql.Table();
