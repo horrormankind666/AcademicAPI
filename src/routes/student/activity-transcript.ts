@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๙/๐๙/๒๕๖๗>
-Modify date : <๐๘/๑๐/๒๕๖๗>
+Modify date : <๐๗/๐๑/๒๕๖๘>
 Description : <>
 =============================================
 */
@@ -11,6 +11,7 @@ Description : <>
 
 import dotenv from 'dotenv';
 import express, { Response, NextFunction, Router } from 'express';
+import mssql from 'mssql';
 
 import { Util } from '../../util';
 import { Schema } from '../../models/schema';
@@ -73,7 +74,7 @@ class Activity {
                 };
         }
 
-        return (<Schema.Result> {
+        return (<Schema.Result>{
             statusCode: activityResult.statusCode,
             data: activityDataResult,
             message: activityResult.message
@@ -81,24 +82,24 @@ class Activity {
     }
 }
 
-router.post('/register', async(req: Schema.TypeRequest, res: Response, next: NextFunction) => {
+router.post('/register', async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
     let activity: Activity = new Activity();
     let activityID: string | null = util.doGetString(req.body.activityId);
     let studentID: string | null = util.doGetString(req.body.studentId);
-    
+
     let activityResult: Schema.Result = await activity.doGet(activityID, studentID);
     let registerResult: Schema.Result = {
         success: (activityResult.statusCode === 200 ? true : false),
         message: activityResult.message,
         code: activityResult.statusCode
     };
-    
+
     if (util.doIsEmpty(activityResult.data) === false) {
         let activityData: Schema.Student.ActivityTranscript.Activity = { ...activityResult.data.data };
         let isValidated: boolean = (util.doIsEmpty(activityResult.data.status) === true ? true : activityResult.data.status);
 
         registerResult.message = activityResult.data.message;
-        
+
         if (isValidated === true) {
             let countRegistered: number = (util.doIsEmpty(activityData.countRegistered) === false ? parseInt(String(activityData.countRegistered)) : 0);
             // countRegistered = 1;
@@ -110,7 +111,7 @@ router.post('/register', async(req: Schema.TypeRequest, res: Response, next: Nex
                 };
             }
         }
-        
+
         if (isValidated === true) {
             let countStudentsRegistered: number = (util.doIsEmpty(activityData.countStudentsRegistered) === false ? parseInt(String(activityData.countStudentsRegistered)) : 0);
             let amountMax: number = (util.doIsEmpty(activityData.amountMax) === false ? parseInt(String(activityData.amountMax)) : 0);
@@ -171,7 +172,7 @@ router.post('/register', async(req: Schema.TypeRequest, res: Response, next: Nex
                 isValidated = false;
                 registerResult.message = {
                     th: 'ไม่สามารถสมัครกิจกรรมนี้ได้ เนื่องจากรหัสนักศึกษานี้ไม่ได้อยู่ในเงื่อนไขการรับสมัคร',
-                    en: 'unable to apply for this activity because this student code is not included in the application conditions'                    
+                    en: 'unable to apply for this activity because this student code is not included in the application conditions'
                 };
             }
         }
@@ -199,13 +200,13 @@ router.post('/register', async(req: Schema.TypeRequest, res: Response, next: Nex
                     th: 'ไม่สามารถสมัครกิจกรรมนี้ได้ เนื่องจากชั้นปีนี้ไม่ได้อยู่ในเงื่อนไขการรับสมัคร',
                     en: 'unable to apply for this activity because this class year is not included in the application conditions'
                 };
-                }
+            }
         }
 
         if (isValidated === true) {
             let setRegisterResult: Schema.Result = await student.activityTranscriptModel.activity.doSetRegister(activityData.ID, activityData.student.ID);
-            
-            if (setRegisterResult.statusCode === 200) 
+
+            if (setRegisterResult.statusCode === 200)
                 registerResult.message = {
                     th: 'สมัครกิจกรรมนี้เรียบร้อย',
                     en: 'successfully applied for this activity'
@@ -220,13 +221,95 @@ router.post('/register', async(req: Schema.TypeRequest, res: Response, next: Nex
         }
 
         registerResult = {
-            success: isValidated ,
+            success: isValidated,
             message: registerResult.message,
             code: registerResult.code
         };
     }
-  
+
     res.send(util.doAPIMessage(registerResult));
+});
+
+router.post('/redeem', async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
+    let activityID: string | null = util.doGetString(req.body.activityId);
+    let studentCode: string | null = util.doGetString(req.body.studentId);
+    let redeemResult: Schema.Result = {
+        success: true,
+        message: null,
+        code: null
+    };
+
+    let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
+    let connRequest: mssql.Request | null = null;
+
+    if (conn !== null)
+        connRequest = conn.request();
+
+    if (redeemResult.success === true) {
+        let activityResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'query', (
+            'select id as projectSectionID\n' +
+            'from   fnc_actGetListSection()\n' +
+            'where  (activityIDRefMUWalletForAT = \'' + activityID + '\')'
+        ));
+
+        if (activityResult.statusCode === 200) {
+            if (util.doIsEmpty(activityResult.datas) === false) {
+                let activityDatas: Array<any> = { ...activityResult.datas };
+                let activityData: any = { ...activityDatas[0] };
+
+                activityID = activityData.projectSectionID;
+            }
+            else
+                redeemResult = {
+                    success: false,
+                    message: 'no activity found',
+                    code: activityResult.statusCode
+                };
+        }
+        else
+            redeemResult = {
+                success: false,
+                message: activityResult.message,
+                code: activityResult.statusCode
+            };
+    }
+
+    if (redeemResult.success === true) {
+        let profileStudentResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'query', (
+            'select id as projectSectionID\n' +
+            'from   fnc_perGetListPersonStudent()\n' +
+            'where  (studentCode = \'' + studentCode + '\')'
+        ));
+
+        if (profileStudentResult.statusCode === 200) {
+            if (util.doIsEmpty(profileStudentResult.datas) === true)
+                redeemResult = {
+                    success: false,
+                    message: 'no student found',
+                    code: profileStudentResult.statusCode
+                };
+        }
+        else
+            redeemResult = {
+                success: false,
+                message: profileStudentResult.message,
+                code: profileStudentResult.statusCode
+            };
+    }
+
+    util.db.mssql.doClose(conn);
+
+    if (redeemResult.success === true) {
+        let setRedeemResult: Schema.Result = await student.activityTranscriptModel.activity.doSetRedeem(activityID, studentCode);
+        
+        redeemResult = {
+            success: (setRedeemResult.statusCode === 200 ? true : false),
+            message: setRedeemResult.message,
+            code: setRedeemResult.statusCode
+        };
+    }
+
+    res.send(util.doAPIMessage(redeemResult));
 });
 
 export default router;

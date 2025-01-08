@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๙/๐๙/๒๕๖๗>
-Modify date : <๐๕/๑๐/๒๕๖๗>
+Modify date : <๐๗/๐๑/๒๕๖๘>
 Description : <>
 =============================================
 */
@@ -142,6 +142,36 @@ export class ActivityTranscriptModel {
                 statusCode: registerResult.statusCode,
                 data: null,
                 message: registerResult.message
+            };
+        },
+        async doSetRedeem(
+            activityID: string | null,
+            studentCode: string | null
+        ): Promise<Schema.Result> {
+            let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
+            let connRequest: mssql.Request | null = null;
+            let query: string = (
+                'declare @tbStudentRedeem [struc3KeyId]\n' +
+                'insert into @tbStudentRedeem\n' +
+                'select \'' + studentCode + '\', ' +
+                '       \'' + activityID + '\', ' +
+                '       \'PST-019\'\n\n' +
+                'exec sp_actSetListStudentRegist @tbStudentRedeem, \'U0001\', \'' + studentCode + '\''
+            );
+
+            if (conn !== null)
+                connRequest = conn.request();
+
+            let redeemResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'query', query);
+            
+            util.db.mssql.doClose(conn);
+
+            return {
+                conn: conn,
+                statusCode: redeemResult.statusCode,
+                data: null,
+                datas: redeemResult.datas,
+                message: redeemResult.message
             };
         }
     }

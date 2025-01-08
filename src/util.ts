@@ -13,7 +13,7 @@ import atob from 'atob';
 import btoa from 'btoa';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
-import mssql, { DateTime } from 'mssql';
+import mssql from 'mssql';
 import pg from 'pg';
 import request from 'request';
 import ticksToDate from 'ticks-to-date';
