@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๑๙/๐๙/๒๕๖๗>
-Modify date : <๐๗/๐๑/๒๕๖๘>
+Modify date : <๒๘/๐๑/๒๕๖๘>
 Description : <>
 =============================================
 */
@@ -172,6 +172,31 @@ export class ActivityTranscriptModel {
                 data: null,
                 datas: redeemResult.datas,
                 message: redeemResult.message
+            };
+        },
+        async doSetVoid(
+            activityRedeemID: string | null,
+            studentID: string | null = 'MUWallet'
+        ): Promise<Schema.Result> {
+            let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
+            let connRequest: mssql.Request | null = null;
+
+            if (conn !== null) {
+                connRequest = conn.request();
+                connRequest.input('transsectionregistid', activityRedeemID);
+                connRequest.input('username', studentID);
+            }
+
+            let voidResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'procedure', 'sp_actSetCancelStudentRegist');
+            
+            util.db.mssql.doClose(conn);
+
+            return {
+                conn: conn,
+                statusCode: voidResult.statusCode,
+                data: null,
+                datas: voidResult.datas,
+                message: voidResult.message
             };
         }
     }

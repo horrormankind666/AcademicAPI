@@ -2,7 +2,7 @@
 =============================================
 Author      : <ยุทธภูมิ ตวันนา>
 Create date : <๐๙/๐๙/๒๕๖๗>
-Modify date : <๐๗/๐๑/๒๕๖๘>
+Modify date : <๒๗/๐๑/๒๕๖๘>
 Description : <>
 =============================================
 */
@@ -262,7 +262,10 @@ router.post('/redeem', async (req: Schema.TypeRequest, res: Response, next: Next
             else
                 redeemResult = {
                     success: false,
-                    message: 'no activity found',
+                    message: {
+                        th: 'ไม่พบกิจกรรม',
+                        en: 'no activity found'
+                    },
                     code: activityResult.statusCode
                 };
         }
@@ -276,7 +279,7 @@ router.post('/redeem', async (req: Schema.TypeRequest, res: Response, next: Next
 
     if (redeemResult.success === true) {
         let profileStudentResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'query', (
-            'select id as projectSectionID\n' +
+            'select id as studentID\n' +
             'from   fnc_perGetListPersonStudent()\n' +
             'where  (studentCode = \'' + studentCode + '\')'
         ));
@@ -285,7 +288,10 @@ router.post('/redeem', async (req: Schema.TypeRequest, res: Response, next: Next
             if (util.doIsEmpty(profileStudentResult.datas) === true)
                 redeemResult = {
                     success: false,
-                    message: 'no student found',
+                    message: {
+                        th: 'ไม่พบนักศึกษา',
+                        en: 'no student found'
+                    },
                     code: profileStudentResult.statusCode
                 };
         }
@@ -301,7 +307,7 @@ router.post('/redeem', async (req: Schema.TypeRequest, res: Response, next: Next
 
     if (redeemResult.success === true) {
         let setRedeemResult: Schema.Result = await student.activityTranscriptModel.activity.doSetRedeem(activityID, studentCode);
-        
+
         redeemResult = {
             success: (setRedeemResult.statusCode === 200 ? true : false),
             message: setRedeemResult.message,
@@ -310,6 +316,109 @@ router.post('/redeem', async (req: Schema.TypeRequest, res: Response, next: Next
     }
 
     res.send(util.doAPIMessage(redeemResult));
+});
+
+router.post('/void', async (req: Schema.TypeRequest, res: Response, next: NextFunction) => {
+    let activityID: string | null = util.doGetString(req.body.activityId);
+    let studentCode: string | null = util.doGetString(req.body.studentId);
+    let activityRedeemID: string | null = null;
+    let studentID: string | null = null;
+    let voidResult: Schema.Result = {
+        success: true,
+        message: null,
+        code: null
+    };
+
+    let conn: mssql.ConnectionPool | null = await util.db.mssql.doConnect();
+    let connRequest: mssql.Request | null = null;
+
+    if (conn !== null)
+        connRequest = conn.request();
+
+    if (voidResult.success === true) {
+        let activityResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'query', (
+            'select id as projectSectionID\n' +
+            'from   fnc_actGetListSection()\n' +
+            'where  (activityIDRefMUWalletForAT = \'' + activityID + '\')'
+        ));
+
+        if (activityResult.statusCode === 200) {
+            if (util.doIsEmpty(activityResult.datas) === false) {
+                let activityDatas: Array<any> = { ...activityResult.datas };
+                let activityData: any = { ...activityDatas[0] };
+
+                activityID = activityData.projectSectionID;
+            }
+            else
+                voidResult = {
+                    success: false,
+                    message: {
+                        th: 'ไม่พบกิจกรรม',
+                        en: 'no activity found'
+                    },
+                    code: activityResult.statusCode
+                };
+        }
+        else
+            voidResult = {
+                success: false,
+                message: activityResult.message,
+                code: activityResult.statusCode
+            };
+    }
+
+    if (voidResult.success === true) {
+        let studentRedeemResult: Schema.Result = await util.db.mssql.doExecuteQuery(conn, connRequest, 'query', (
+            'select a.id as activityRedeemID,\n' +
+            '       a.studentId as studentID,\n' +
+            '       a.projectSectionId as projectSectionID,\n ' +
+            '       a.studentCode\n' +
+            'from   actTransSectionRegist as a with(nolock) left join\n' +
+            '       actTransProjectSection as b with(nolock) on a.projectSectionId = b.id\n' +
+            'where	(a.projectSectionId = \'' + activityID + '\') and\n' +
+            '       (a.studentCode = \'' + studentCode + '\') and\n' +
+            '       (a.cancelStatus is null)'
+        ));
+
+        if (studentRedeemResult.statusCode === 200) {
+            if (util.doIsEmpty(studentRedeemResult.datas) === false) {
+                let studentRedeemDatas: Array<any> = { ...studentRedeemResult.datas };
+                let studentRedeemData: any = { ...studentRedeemDatas[0] };
+
+                activityRedeemID = studentRedeemData.activityRedeemID;
+                studentID = studentRedeemData.studentId;
+            }
+            else
+                voidResult = {
+                    success: false,
+                    message: {
+                        th: 'ไม่พบนักศึกษาเข้าร่วมกิจกรรม',
+                        en: 'no student found'
+                    },
+                    code: studentRedeemResult.statusCode
+                };
+        }
+        else
+            voidResult = {
+                success: false,
+                message: studentRedeemResult.message,
+                code: studentRedeemResult.statusCode
+            };
+    }
+
+    util.db.mssql.doClose(conn);
+
+    if (voidResult.success === true) {
+        let setVoidResult: Schema.Result = await student.activityTranscriptModel.activity.doSetVoid(activityRedeemID, studentID);
+
+        voidResult = {
+            success: (setVoidResult.statusCode === 200 ? true : false),
+            message: setVoidResult.message,
+            code: setVoidResult.statusCode
+        };
+    }
+
+    res.send(util.doAPIMessage(voidResult));
 });
 
 export default router;
